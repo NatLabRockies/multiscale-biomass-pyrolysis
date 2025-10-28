@@ -1,0 +1,96 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+porosityval  $poro;
+
+
+defaultFieldValues
+(
+    volScalarFieldValue T $wallT
+    volScalarFieldValue porosity 1
+    volScalarFieldValue CELL.solid 0
+    volScalarFieldValue LIG.solid 0
+    volScalarFieldValue HCELL.solid 0
+    volScalarFieldValue ACELL.solid 0
+    volScalarFieldValue ALIG.solid 0
+    volScalarFieldValue AHCELL.solid 0
+    volScalarFieldValue CHAR.solid 0
+    volScalarFieldValue CELL 0
+    volScalarFieldValue LIG 0
+    volScalarFieldValue HCELL 0
+    volScalarFieldValue ACELL 0
+    volScalarFieldValue ALIG 0
+    volScalarFieldValue AHCELL 0
+    volScalarFieldValue CHAR 0
+    volScalarFieldValue N2 1
+    volScalarFieldValue TRC 0
+    volScalarFieldValue TRH 0
+    volScalarFieldValue TRL 0
+    volScalarFieldValue SGC 0
+    volScalarFieldValue SGH 0
+    volScalarFieldValue SGL 0
+    volScalarFieldValue N2.solid 0
+    volScalarFieldValue TRC.solid 0
+    volScalarFieldValue TRH.solid 0
+    volScalarFieldValue TRL.solid 0
+    volScalarFieldValue SGC.solid 0
+    volScalarFieldValue SGH.solid 0
+    volScalarFieldValue SGL.solid 0
+    volVectorFieldValue U ($Uin 0.0 0.0)
+
+);
+
+regions
+(
+    cylinderToCell
+    {
+        p1 ($xmid $ymid $cylbotz);
+        p2 ($xmid $ymid $cyltopz);
+        radius $cylrad;
+        fieldValues
+        (
+            volScalarFieldValue T $Tpart0
+            volScalarFieldValue porosity $porosityval
+	    volScalarFieldValue CELL.solid #calc "$cellFrac * ( 1.0 - $porosityval )"
+	    volScalarFieldValue LIG.solid #calc "$ligFrac * ( 1.0 - $porosityval )"
+	    volScalarFieldValue HCELL.solid #calc "$hcellFrac * ( 1.0 - $porosityval )"
+            volScalarFieldValue ACELL.solid 0
+            volScalarFieldValue ALIG.solid 0
+            volScalarFieldValue AHCELL.solid 0
+            volScalarFieldValue CHAR.solid 0
+            volScalarFieldValue N2 1
+            volScalarFieldValue TRC 0
+            volScalarFieldValue TRH 0
+            volScalarFieldValue TRL 0
+            volScalarFieldValue SGC 0
+            volScalarFieldValue SGH 0
+            volScalarFieldValue SGL 0
+            volScalarFieldValue N2.solid 0
+            volScalarFieldValue TRC.solid 0
+            volScalarFieldValue TRH.solid 0
+            volScalarFieldValue TRL.solid 0
+            volScalarFieldValue SGC.solid 0
+            volScalarFieldValue SGH.solid 0
+            volScalarFieldValue SGL.solid 0
+            volVectorFieldValue U (0.0 0.0 0.0)
+
+        );
+    }
+);
+
+// ************************************************************************* //

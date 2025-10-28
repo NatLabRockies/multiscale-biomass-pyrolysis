@@ -1,0 +1,19 @@
+cylrad 0.0034;
+cylht 0.008;
+cylmidr #calc "$cylrad*0.5";
+cylmidz #calc "$cylht*0.5";
+domx #calc "5.0*$cylrad";
+domy #calc "5.0*$cylrad";
+domz #calc "2.0*$cylht";
+xmid #calc "0.005+$cylrad";
+ymid #calc "$domy*0.5";
+zmid #calc "$domz*0.5";
+cyltopz #calc "$zmid+$cylmidz";
+cylbotz #calc "$zmid-$cylmidz";
+wallT 773;
+poro 0.16;
+Uin 0.175;
+Tpart0 300;
+cellFrac 0.41;  //biomass cellulose fraction
+hcellFrac 0.32;  //biomass hemicellulose fraction
+ligFrac 0.27;   //biomass lignin fraction

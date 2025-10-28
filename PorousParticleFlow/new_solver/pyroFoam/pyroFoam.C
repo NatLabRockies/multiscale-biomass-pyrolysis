@@ -1,12 +1,12 @@
 /**
  * @file pyroFoam.C
  * @brief Solver for a reacting flow over a porous reacting solid.
- * 
+ *
  * @details Solver for a reacting flow over a porous reacting solid
  * with pyrolisis reactions.
  * Species generated in the solid are passed to the fluid.
  *
- * @author Federico Municchi, NREL (2025)    
+ * @author Federico Municchi, NREL (2025)
 */
 
 #include "fvCFD.H"
@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     #include "createFieldRefs.H"
     #include "createRhoUfIfPresent.H"
 
+    Switch chemistryOnly(pimple.dict().lookupOrDefault("solveChemistryOnly",false));
 
     turbulence->validate();
 
@@ -87,6 +88,12 @@ int main(int argc, char *argv[])
         // --- Pressure-velocity PIMPLE corrector loop
         while (pimple.loop())
         {
+            if ( chemistryOnly )
+            {
+                #include "solveChemistryOnly.H"
+                continue;
+            }
+
             if (pimple.firstPimpleIter() || moveMeshOuterCorrectors)
             {
                 // Store momentum to set rhoUf for introduced faces.

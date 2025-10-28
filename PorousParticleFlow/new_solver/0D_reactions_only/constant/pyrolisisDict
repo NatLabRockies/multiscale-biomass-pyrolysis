@@ -1,0 +1,289 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      pyrolisisDict;
+}
+
+poreSize 1e-5;
+htcoeff 125;
+
+nSubTimeSteps 10;
+
+species
+(
+    CELL
+    ACELL
+    HCELL
+    AHCELL
+    LIG
+    ALIG
+    CHAR
+    TRC
+    TRH
+    TRL
+    SGC
+    SGH
+    SGL
+);
+
+reactions
+(
+    MB1C
+    MB1H
+    MB1L
+    MB2C
+    MB2H
+    MB2L
+    MB3C
+    MB3H
+    MB3L
+//    MB4C
+//    MB4H
+//    MB4L
+);
+
+// kinetics and molwts from Xiong et al Chem Eng Sci 2013 https://doi.org/10.1016/j.ces.2013.06.017
+// kappa and density from Sanchez et al J Anal Appl Pyrolysis 2022 https://doi.org/10.1016/j.jaap.2022.105786
+// gas densities calculated using ideal gas law at 1 atm, 650C
+speciesCoeffs
+{
+    CELL
+    {
+        name CELL;
+        rho 1500;
+        cp 2423.15;
+        molWeight 123.7;
+        kappa 0.865;
+        gas false;
+    }
+    
+    ACELL
+    {
+        name ACELL;
+        rho 1500;
+        cp 2423.15;
+        molWeight 123.7;
+        kappa 0.865; 
+        gas false;
+    }
+
+    HCELL
+    {
+        name HCELL;
+        rho 1500;
+        cp 2423.15;
+        molWeight 123.7;
+        kappa 0.865; 
+        gas false;
+    }
+
+    AHCELL
+    {
+        name AHCELL;
+        rho 1500;
+        cp 2423.15;
+        molWeight 123.7;
+        kappa 0.865; 
+        gas false;
+    }
+
+    LIG
+    {
+        name LIG;
+        rho 1500;
+        cp 2423.15;
+        molWeight 123.7;
+        kappa 0.865; 
+        gas false;
+    }
+
+    ALIG
+    {
+        name ALIG;
+        rho 1500;
+        cp 2423.15;
+        molWeight 123.7;
+        kappa 0.865; 
+        gas false;
+    }
+    
+
+    CHAR
+    {
+        name CHAR;
+        rho 1700; 
+        cp 1100;
+        molWeight 123.7;
+        kappa 2.485; 
+        gas false;
+    }
+
+    TRC
+    {
+        name TRC;
+        rho 1.3;
+        cp 2500;
+        molWeight 123.7;
+        kappa 2.577e-2;
+        gas true;
+    }
+
+    TRH
+    {
+        name TRH;
+        rho 1.3;
+        cp 2500;
+        molWeight 123.7;
+        kappa 2.577e-2;
+        gas true;
+    }
+
+    TRL
+    {
+        name TRL;
+        rho 1.3;
+        cp 2500;
+        molWeight 123.7;
+        kappa 2.577e-2;
+        gas true;
+    }
+
+    SGC
+    {
+        name SGC;
+        rho 0.4;
+        cp 1100;
+        molWeight 123.7;
+        kappa 2.577e-2;
+        gas true;
+    }
+
+    SGH
+    {
+        name SGH;
+        rho 0.4;
+        cp 1100;
+        molWeight 123.7;
+        kappa 2.577e-2;
+        gas true;
+    }
+
+    SGL
+    {
+        name SGL;
+        rho 0.4;
+        cp 1100;
+        molWeight 123.7;
+        kappa 2.577e-2;
+        gas true;
+    }
+
+}
+
+
+
+reactionCoeffs
+{
+    MB1C
+    {
+        reactants ( CELL );
+        reactant_stochiometric_coefficients (1);
+        products ( ACELL );
+        product_stochiometric_coefficients (1);
+
+        A           2.80e19;
+        Ta          29155.6;
+    }
+
+    MB1H
+    {
+        reactants ( HCELL );
+        reactant_stochiometric_coefficients (1);
+        products ( AHCELL );
+        product_stochiometric_coefficients (1);
+
+        A           2.1e16;
+        Ta          22456.1;
+    }
+
+    MB1L
+    {
+        reactants ( LIG );
+        reactant_stochiometric_coefficients (1);
+        products ( ALIG );
+        product_stochiometric_coefficients (1);
+
+        A           9.6e8;
+        Ta          12942.0;
+    }
+
+    MB2C
+    {
+        reactants ( ACELL );
+        reactant_stochiometric_coefficients (1);
+        products ( TRC );
+        product_stochiometric_coefficients (1);
+
+        A           3.28e14;
+        Ta          23634.8;
+    }
+
+    MB2H
+    {
+        reactants ( AHCELL );
+        reactant_stochiometric_coefficients (1);
+        products ( TRH );
+        product_stochiometric_coefficients (1);
+
+        A           8.75e15;
+        Ta          24344.5;
+    }
+
+    MB2L
+    {
+        reactants ( ALIG );
+        reactant_stochiometric_coefficients (1);
+        products ( TRL );
+        product_stochiometric_coefficients (1);
+
+        A           1.50e9;
+        Ta          17296.1;
+    }
+
+    MB3C
+    {
+        reactants ( ACELL );
+        reactant_stochiometric_coefficients (1);
+        products ( CHAR SGC );
+        product_stochiometric_coefficients (0.35 0.65);
+
+        A           1.30e10;
+        Ta          18102.0;
+    }
+
+    MB3H
+    {
+        reactants ( AHCELL );
+        reactant_stochiometric_coefficients (1);
+        products ( CHAR SGH );
+        product_stochiometric_coefficients (0.6 0.4);
+
+        A           2.6e11;
+        Ta          17524.7;
+    }
+
+    MB3L
+    {
+        reactants ( ALIG );
+        reactant_stochiometric_coefficients (1);
+        products ( CHAR SGL );
+        product_stochiometric_coefficients (0.75 0.25);
+
+        A           7.7e6;
+        Ta          13399.1;
+    }
+}
+
+
