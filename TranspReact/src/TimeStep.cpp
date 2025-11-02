@@ -136,9 +136,12 @@ void TranspReact::find_transp_timescales(int lev,amrex::Real cur_time,
     if(do_adv)
     {
         amrex::Real max_vel    = vel.norm0(0,0,true);
-        for (int i = 0; i < AMREX_SPACEDIM; i++) 
+        if(max_vel > 0)
         {
-            dt_adv = std::min(dt_adv, dx[i]/max_vel);
+            for (int i = 0; i < AMREX_SPACEDIM; i++) 
+            {
+                dt_adv = std::min(dt_adv, dx[i]/max_vel);
+            }
         }
     }
 
