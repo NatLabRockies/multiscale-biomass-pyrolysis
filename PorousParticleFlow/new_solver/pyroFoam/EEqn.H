@@ -15,7 +15,7 @@
         )
       + fvm::Sp(ps.HTC()/thermo.Cpv(), he)
       + thermophysicalTransport->divq(he)
-      + fvm::SuSp(RRQdot/he,he)
+      + RRQdot
      ==
         reaction->Qdot()
       +  ( ps.HTC() * ( ps.T() - T + he/thermo.Cpv() ) )
