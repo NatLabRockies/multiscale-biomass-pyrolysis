@@ -443,11 +443,11 @@ void pyroSolid::solveEnergy()
         if (m_formationEnthalpy[specieI] < 1e-16) continue;
 
         const volScalarField ddtspecies = fvc::ddt(m_species[specieI]);
-        const scalar coeff = -m_rho[specieI]*m_formationEnthalpy[specieI];
+        const scalar coeff = m_rho[specieI]*m_formationEnthalpy[specieI];
 
         forAll(formH,cellI)
         {
-            formH[cellI] += coeff*ddtspecies[cellI]/m_T[cellI];
+            formH[cellI] += coeff*ddtspecies[cellI];
         }
     }
 
@@ -457,7 +457,7 @@ void pyroSolid::solveEnergy()
         fvm::ddt(m_rhoCp, m_T)
       - fvm::laplacian(kappaf, m_T)
       + fvm::Sp(m_htc, m_T)
-      + fvm::SuSp(formH, m_T)
+      + formH
       ==
         m_htc * T_fluid
 //      - RRQdot
