@@ -10,6 +10,7 @@ irreversibleArrheniusReaction::irreversibleArrheniusReaction(const word& name, c
     m_product_stoch(dict.lookup("product_stochiometric_coefficients")),
     m_A(readScalar(dict.lookup("A"))),
     m_Ta(readScalar(dict.lookup("Ta"))),
+    m_beta(dict.lookupOrDefault<scalar>("beta",0.)),
     m_reactant_index(m_reactant_stoch.size(), -1),
     m_product_index(m_product_stoch.size(), -1)
 {
@@ -27,7 +28,7 @@ irreversibleArrheniusReaction::irreversibleArrheniusReaction(const word& name, c
     {
         FatalErrorInFunction << "Number of products and stochiometric coefficients do not match" << endl;
     }
-    
+
     // Populate index arrays
     forAll(species_name, specieI)
     {
@@ -53,7 +54,7 @@ irreversibleArrheniusReaction::irreversibleArrheniusReaction(const word& name, c
         if (m_reactant_index[id] == -1)
         {
             FatalErrorInFunction << "Error: unknown reactant " << reactant_list[id] << "\n" << abort(FatalError);
-        } 
+        }
     }
 
     forAll(m_product_index, id)
@@ -61,7 +62,7 @@ irreversibleArrheniusReaction::irreversibleArrheniusReaction(const word& name, c
         if (m_product_index[id] == -1)
         {
             FatalErrorInFunction << "Error: unknown product " << product_list[id] << "\n" << abort(FatalError);
-        } 
+        }
     }
 
 }
@@ -72,14 +73,14 @@ irreversibleArrheniusReaction::~irreversibleArrheniusReaction()
 scalar irreversibleArrheniusReaction::computeReactionRate(const scalar& T, const scalarField& species) const
 {
     /* Compute Arrhenius rate */
-    scalar k = m_A * exp(-m_Ta / T);
+    scalar k = pow(T, m_beta) * m_A * exp(-m_Ta / T);
 
     /* Compute and return reaction rate */
     scalar prodCnu(1.0);
 
     forAll(m_reactant_stoch, id)
     {
-        prodCnu *= pow(species[m_reactant_index[id]], m_reactant_stoch[id]); 
+        prodCnu *= pow(species[m_reactant_index[id]], m_reactant_stoch[id]);
     }
 
     return k * prodCnu;
@@ -93,12 +94,12 @@ scalarField irreversibleArrheniusReaction::computeMolarSources(const scalar& T, 
 
     forAll(m_reactant_index, id)
     {
-        molarSources[m_reactant_index[id]] = -m_reactant_stoch[id] * R; 
+        molarSources[m_reactant_index[id]] = -m_reactant_stoch[id] * R;
     }
 
     forAll(m_product_index, id)
     {
-        molarSources[m_product_index[id]] = m_product_stoch[id] * R; 
+        molarSources[m_product_index[id]] = m_product_stoch[id] * R;
     }
 
     return molarSources;
