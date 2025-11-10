@@ -78,8 +78,8 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
             IOobject::AUTO_WRITE
         ),
         m_mesh,
-        dimensionedScalar("htc",dimPower/dimVolume/dimTemperature,0.)   
-    ),   
+        dimensionedScalar("htc",dimPower/dimVolume/dimTemperature,0.)
+    ),
     m_nSubTimeSteps(m_dict.lookupOrDefault<label>("nSubTimeSteps",1)),
     m_poreSize(readScalar(m_dict.lookup("poreSize"))),
     m_speciesName(m_dict.lookup("species")),
@@ -89,7 +89,8 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
     m_molWeight(m_speciesName.size()),
     m_kappa(m_speciesName.size()),
     m_is_gas(m_speciesName.size()),
-    m_addToPoro(m_speciesName.size(),true)
+    m_addToPoro(m_speciesName.size(),true),
+    m_formationEnthalpy(m_speciesName.size())
 {
     Info << "Reading pyrolisis model" << endl;
     Info << "Found species: " << m_speciesName << endl;
@@ -115,6 +116,8 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
             )
         );
 
+        m_species[specieI].storeOldTime();
+
         m_rho[specieI] = scalar(readScalar(speciesDict.lookup("rho")));
         m_cp[specieI] = scalar(readScalar(speciesDict.lookup("cp")));
         m_kappa[specieI] = scalar(readScalar(speciesDict.lookup("kappa")));
@@ -123,7 +126,8 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
         m_is_gas[specieI].first = speciesDict.lookupOrDefault<bool>("gas",false);
 
         m_addToPoro[specieI] = speciesDict.lookupOrDefault<bool>("addToPorosity",true);
-        
+        m_formationEnthalpy[specieI] = speciesDict.lookupOrDefault<scalar>("hf",0.); // In energy per mass
+
         if (m_is_gas[specieI].first)
         {
             m_is_gas[specieI].second = m_reactionRates.size();
@@ -142,7 +146,7 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
                     ),
                     m_mesh,
                     dimensionedScalar("Rdot",dimDensity/dimTime,0.)
-                )            
+                )
             );
         }
 
@@ -150,7 +154,7 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
         {
             m_rhoCp[cellI] += m_species[specieI][cellI]*m_rho[specieI]*m_cp[specieI];
         }
-        
+
     }
 
     m_rhoCp.correctBoundaryConditions();
@@ -160,14 +164,14 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
     List<word> reactionList(m_dict.lookup("reactions"));
 
     Info << "Found reactions: " << reactionList << endl;
-    
+
     m_reactions.resize(reactionList.size());
 
     forAll(reactionList, reactI)
     {
         if( !m_dict.subDict("reactionCoeffs").found(reactionList[reactI]) )
         {
-            FatalErrorInFunction << "Cannot find reaction " << reactionList[reactI] << "\n" << abort(FatalError);            
+            FatalErrorInFunction << "Cannot find reaction " << reactionList[reactI] << "\n" << abort(FatalError);
         }
 
         m_reactions.set (
@@ -178,7 +182,7 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
                 m_dict.subDict("reactionCoeffs").subDict(reactionList[reactI]),
                 m_speciesName
             )
-        );        
+        );
     }
 }
 
@@ -188,9 +192,9 @@ pyroSolid::~pyroSolid()
 void pyroSolid::evolve()
 {
 //    updateKp();
-    
+
     solveEnergy();
-    
+
     Info << "Updating solid composition" << endl;
 
     scalarField Y(m_species.size(),0.);
@@ -254,7 +258,7 @@ void pyroSolid::evolve()
             {
                 m_reactionRates[m_is_gas[specieI].second][cellI] = ntot[specieI] *  m_molWeight[specieI];
                 //Info << "ndot " << m_species[specieI].name() << ": " << ntot[specieI] << endl;
-                m_species[specieI][cellI] = 0.;             
+                m_species[specieI][cellI] = 0.;
             }
         }
 
@@ -266,7 +270,7 @@ void pyroSolid::evolve()
 
             vol_species += m_species[specieI][cellI];
         }
-        
+
         m_porosity[cellI] = 1.0 - vol_species;
     }
 
@@ -300,7 +304,7 @@ bool pyroSolid::isGasTransferSpecie(const word& name)
     if (id == -1)
     {
         FatalErrorInFunction << "Error: unknown gas specie " << name << "\n" << abort(FatalError);
-    } 
+    }
 
     return m_is_gas[id].first;
 }
@@ -312,7 +316,7 @@ const volScalarField& pyroSolid::RR(const word& name)
     if (id == -1)
     {
         FatalErrorInFunction << "Error: unknown gas specie " << name << "\n" << abort(FatalError);
-    } 
+    }
 
     Info << "Gas specie " << name  << " id: " << m_is_gas[id].second << " transfer mass: " << fvc::domainIntegrate(m_reactionRates[m_is_gas[id].second]) << endl;
     return m_reactionRates[m_is_gas[id].second];
@@ -323,7 +327,7 @@ const scalar& pyroSolid::poreSize()
     return m_poreSize;
 }
 
-// void pyroSolid::updateKp() 
+// void pyroSolid::updateKp()
 // {
 //     //- Basic Darcy for now
 
@@ -331,20 +335,20 @@ const scalar& pyroSolid::poreSize()
 
 //     forAll(m_Kp, cellI)
 //     {
-//         m_Kp[cellI] =  tensor::I 
-//             * mu[cellI] 
+//         m_Kp[cellI] =  tensor::I
+//             * mu[cellI]
 //             * (
 //                 (150. * (m_porosity[cellI]) )
 //                 /
-//                 sqr(m_porosity[cellI]) * m_porosity[cellI] * sqr(m_poreSize) 
+//                 sqr(m_porosity[cellI]) * m_porosity[cellI] * sqr(m_poreSize)
 //             );
 //     }
 
 //     m_Kp.correctBoundaryConditions();
-    
+
 // }
 
-void pyroSolid::updateHTC() 
+void pyroSolid::updateHTC()
 {
     const auto& mu = m_mesh.lookupObject<volScalarField>("thermo:mu");
     dimensionedScalar dimPS("dimPS",dimLength,m_poreSize);
@@ -354,16 +358,16 @@ void pyroSolid::updateHTC()
 
     const volScalarField Re = mag(U) * rho * dimPS / mu;
     const scalar Pr = 0.7;
-    //volScalarField Nu = sqrt( mag(Kp) / mu ) / dimPS;   
-    
+    //volScalarField Nu = sqrt( mag(Kp) / mu ) / dimPS;
+
     // Withaker correlation
     const volScalarField Nu = (1. - m_porosity) * ( 2. + 1.1 * pow(Re, 0.6) * pow(Pr,1.0/3.0));
-    
+
 
     forAll(m_htc, cellI)
     {
         scalar kappa(0.);
-        
+
         forAll(m_kappa, specieI)
         {
             kappa += m_kappa[specieI]*m_species[specieI][cellI];
@@ -377,22 +381,22 @@ void pyroSolid::updateHTC()
 
 }
 
-// const volTensorField& pyroSolid::Kp() 
+// const volTensorField& pyroSolid::Kp()
 // {
 //     return m_Kp;
 // }
 
-const volScalarField& pyroSolid::HTC() 
+const volScalarField& pyroSolid::HTC()
 {
     return m_htc;
 }
 
-const volScalarField& pyroSolid::T() 
+const volScalarField& pyroSolid::T()
 {
     return m_T;
 }
 
-void pyroSolid::solveEnergy() 
+void pyroSolid::solveEnergy()
 {
     //- Compute effective conductivity
     dimensionedScalar kappaDim("kappaDim",dimPower/dimLength/dimTemperature, 0.);
@@ -412,7 +416,7 @@ void pyroSolid::solveEnergy()
         forAll(m_kappa, specieI)
         {
             rhocp += m_species[specieI][cellI]*m_rho[specieI]*m_cp[specieI];
-    
+
         }
 
         m_rhoCp[cellI] = rhocp;
@@ -430,13 +434,30 @@ void pyroSolid::solveEnergy()
 
     updateHTC();
 
-    const volScalarField& RRQdot = m_mesh.lookupObject<volScalarField>("RRQdot");
+    //const volScalarField& RRQdot = m_mesh.lookupObject<volScalarField>("RRQdot");
+
+    // Formation enthaly term
+    volScalarField formH(fvc::ddt(m_rhoCp)*0.); // Just initialize
+    forAll(m_speciesName, specieI)
+    {
+        if (m_formationEnthalpy[specieI] < 1e-16) continue;
+
+        const volScalarField ddtspecies = fvc::ddt(m_species[specieI]);
+        const scalar coeff = -m_rho[specieI]*m_formationEnthalpy[specieI];
+
+        forAll(formH,cellI)
+        {
+            formH[cellI] += coeff*ddtspecies[cellI]/m_T[cellI];
+        }
+    }
+
 
     fvScalarMatrix TEqn
     (
         fvm::ddt(m_rhoCp, m_T)
       - fvm::laplacian(kappaf, m_T)
       + fvm::Sp(m_htc, m_T)
+      + fvm::SuSp(formH, m_T)
       ==
         m_htc * T_fluid
 //      - RRQdot
@@ -467,7 +488,7 @@ volScalarField pyroSolid::mdot()
         ),
         m_mesh,
         dimensionedScalar("mdot",dimDensity/dimTime,0.)
-    );            
+    );
 
     forAll(m_reactionRates, rateI)
     {

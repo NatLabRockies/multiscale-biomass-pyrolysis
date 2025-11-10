@@ -31,6 +31,7 @@ private:
   List<std::pair<bool, label>> m_is_gas;
   PtrList<irreversibleArrheniusReaction> m_reactions;
   List<bool> m_addToPoro;
+  List<scalar> m_formationEnthalpy;
 
   label getSpecieId(const word &name);
 
