@@ -1,8 +1,8 @@
 {
     //!NOTE: This should be changed!
-    
+
     volScalarField& he = thermo.he();
-  
+
 
     fvScalarMatrix EEqn
     (
@@ -15,10 +15,10 @@
         )
       + fvm::Sp(ps.HTC()/thermo.Cpv(), he)
       + thermophysicalTransport->divq(he)
+      + fvm::SuSp(RRQdot/he,he)
      ==
         reaction->Qdot()
       +  ( ps.HTC() * ( ps.T() - T + he/thermo.Cpv() ) )
-      +  RRQdot
       + fvModels.source(rho, he)
     );
 
