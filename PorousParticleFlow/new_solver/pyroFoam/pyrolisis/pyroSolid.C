@@ -437,7 +437,7 @@ void pyroSolid::solveEnergy()
     //const volScalarField& RRQdot = m_mesh.lookupObject<volScalarField>("RRQdot");
 
     // Formation enthaly term
-    volScalarField formH(fvc::ddt(m_rhoCp)*0.); // Just initialize
+    volScalarField formH(fvc::ddt(m_rhoCp, m_T)*0.); // Just initialize
     forAll(m_speciesName, specieI)
     {
         if (m_formationEnthalpy[specieI] < 1e-16) continue;
