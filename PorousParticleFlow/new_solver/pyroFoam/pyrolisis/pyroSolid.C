@@ -457,9 +457,9 @@ void pyroSolid::solveEnergy()
         fvm::ddt(m_rhoCp, m_T)
       - fvm::laplacian(kappaf, m_T)
       + fvm::Sp(m_htc, m_T)
-      + formH
       ==
-        m_htc * T_fluid
+        ( m_htc * T_fluid )
+      + formH
 //      - RRQdot
     );
 
