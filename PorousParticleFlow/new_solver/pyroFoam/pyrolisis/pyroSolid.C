@@ -29,6 +29,19 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
         ),
         m_mesh
     ),
+    m_rhoField
+    (
+        IOobject
+        (
+            "rho.solid",
+            m_mesh.time().timeName(),
+            m_mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        m_mesh,
+        dimensionedScalar("rho",dimDensity,0.)
+    ),
     m_T
     (
         IOobject
@@ -53,6 +66,19 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
         ),
         m_mesh,
         dimensionedScalar("rhoCp",dimEnergy/dimTemperature/dimVolume,0.)
+    ),
+    m_Qdot
+    (
+        IOobject
+        (
+            "Qdot.solid",
+            m_mesh.time().timeName(),
+            m_mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        m_mesh,
+        dimensionedScalar("Qdot",dimEnergy/dimTime/dimVolume,0.)
     ),
     // m_Kp
     // (
@@ -79,6 +105,19 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
         ),
         m_mesh,
         dimensionedScalar("htc",dimPower/dimVolume/dimTemperature,0.)
+    ),
+    m_kappa_tot
+    (
+        IOobject
+        (
+            "kappa.solid",
+            m_mesh.time().timeName(),
+            m_mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        m_mesh,
+        dimensionedScalar("kappa",dimPower/dimLength/dimTemperature,0.)
     ),
     m_nSubTimeSteps(m_dict.lookupOrDefault<label>("nSubTimeSteps",1)),
     m_poreSize(readScalar(m_dict.lookup("poreSize"))),
@@ -219,6 +258,8 @@ void pyroSolid::evolve()
             continue;
         }
 
+        m_Qdot[cellI] = 0.; // Reset heat of reaction
+
         scalar dt = m_mesh.time().deltaT().value();
 
         scalar sub_dt = dt / m_nSubTimeSteps;
@@ -232,6 +273,7 @@ void pyroSolid::evolve()
             //Y0[specieI] = Y[specieI];
         }
         scalarField ntot(m_species.size(),0.);
+
         /* Use Euler marching */
         for (label ts = 0; ts < m_nSubTimeSteps; ts++)
         {
@@ -239,7 +281,9 @@ void pyroSolid::evolve()
 
             forAll(m_reactions, reactI)
             {
-                ndot += m_reactions[reactI].computeMolarSources(m_T[cellI], Y);
+                // This updates ndot and adds the heat of reaction for m_reactions[reactI] to
+                // m_Qdot. This is added every sub time step.
+                m_Qdot[cellI] += m_reactions[reactI].computeSources(m_T[cellI], Y, m_molWeight, ndot) / scalar(m_nSubTimeSteps);
             }
 
             Y += sub_dt * ndot;
@@ -262,19 +306,24 @@ void pyroSolid::evolve()
             }
         }
 
-        /* Update local porosity */
+        /* Update local porosity and density */
         scalar vol_species(0.);
+        scalar mass_species(0.);
         forAll(m_species, specieI)
         {
             if(!m_addToPoro[specieI]) continue;
 
             vol_species += m_species[specieI][cellI];
+            mass_species += m_species[specieI][cellI] * m_rho[specieI];
         }
 
         m_porosity[cellI] = 1.0 - vol_species;
+        m_rhoField[cellI] = mass_species;
     }
 
     m_porosity.correctBoundaryConditions();
+    m_rhoField.correctBoundaryConditions();
+
 }
 
 const volScalarField& pyroSolid::porosity()
@@ -399,16 +448,18 @@ const volScalarField& pyroSolid::T()
 void pyroSolid::solveEnergy()
 {
     //- Compute effective conductivity
-    dimensionedScalar kappaDim("kappaDim",dimPower/dimLength/dimTemperature, 0.);
-    surfaceScalarField kappaf(fvc::interpolate(m_porosity)*kappaDim);
+    dimensionedScalar kappaDim("kappaDim",dimPower/dimLength/dimTemperature, 1.);
     surfaceScalarField porosityf(fvc::interpolate(m_porosity));
     const auto& T_fluid = m_mesh.lookupObject<volScalarField>("T");
 
+    m_kappa_tot *= 0.;
+
     forAll(m_kappa, specieI)
     {
-        kappaf += fvc::interpolate(m_species[specieI])*kappaDim*m_kappa[specieI];
-
+        m_kappa_tot += m_species[specieI]*kappaDim*m_kappa[specieI];
     }
+
+    surfaceScalarField kappaf = fvc::interpolate(m_kappa_tot);
 
     forAll(m_rhoCp,cellI)
     {
@@ -437,20 +488,22 @@ void pyroSolid::solveEnergy()
     //const volScalarField& RRQdot = m_mesh.lookupObject<volScalarField>("RRQdot");
 
     // Formation enthaly term
-    volScalarField formH(fvc::ddt(m_rhoCp, m_T)*0.); // Just initialize
-    forAll(m_speciesName, specieI)
-    {
-        if (m_formationEnthalpy[specieI] < 1e-16) continue;
+    // volScalarField formH(fvc::ddt(m_rhoCp, m_T)*0.); // Just initialize
+    // forAll(m_speciesName, specieI)
+    // {
+    //     if (m_formationEnthalpy[specieI] < 1e-16) continue;
+    //
+    //     const volScalarField ddtspecies = fvc::ddt(m_species[specieI]);
+    //     const scalar coeff = m_rho[specieI]*m_formationEnthalpy[specieI];
+    //
+    //     forAll(formH,cellI)
+    //     {
+    //         formH[cellI] += coeff*ddtspecies[cellI];
+    //     }
+    // }
 
-        const volScalarField ddtspecies = fvc::ddt(m_species[specieI]);
-        const scalar coeff = m_rho[specieI]*m_formationEnthalpy[specieI];
 
-        forAll(formH,cellI)
-        {
-            formH[cellI] += coeff*ddtspecies[cellI];
-        }
-    }
-
+    if( !(m_dict.lookupOrDefault<bool>("solveSolidEnergy",true)) ) return;
 
     fvScalarMatrix TEqn
     (
@@ -459,7 +512,7 @@ void pyroSolid::solveEnergy()
       + fvm::Sp(m_htc, m_T)
       ==
         ( m_htc * T_fluid )
-      + formH
+      + m_Qdot
 //      - RRQdot
     );
 

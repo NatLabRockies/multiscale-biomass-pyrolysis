@@ -28,7 +28,7 @@ Explicit (no sundials):
    integration.rk.type = 3 (for 3rd order)
 Implicit (with sundials):
    integration.type = SUNDIALS
-   integration.sundials.strategy = CVODE
+   integration.sundials.type = ERK
  */
 void TranspReact::chemistry_advance(int lev, Real time, Real dt_lev,
        MultiFab &adsrc_lev, 
@@ -45,6 +45,13 @@ void TranspReact::chemistry_advance(int lev, Real time, Real dt_lev,
         amrex::MultiFab::Saxpy(dSdt, 1.0, adsrc_lev, 0, 0, NUM_SPECIES, 0);
                 
     };
+    
+    auto rhs_null_function = [&] ( Vector<MultiFab> & dSdt_vec, 
+                             const Vector<MultiFab>& S_vec, const Real time) {
+        auto & dSdt = dSdt_vec[0];
+        dSdt.setVal(0.0);
+                
+    };
     Vector<MultiFab> state_old, state_new;
 
     // This term has the current state
@@ -53,7 +60,30 @@ void TranspReact::chemistry_advance(int lev, Real time, Real dt_lev,
     state_new.push_back(MultiFab(S_new, amrex::make_alias, 0, S_new.nComp()));
     // Define the integrator
     TimeIntegrator<Vector<MultiFab>> integrator(state_old);
-    integrator.set_rhs(rhs_function);
+    if(integration_type=="SUNDIALS")
+    {
+        if(integration_sd_type=="ERK" || integration_sd_type=="DIRK")
+        {
+                integrator.set_rhs(rhs_function);
+        }
+        else if(integration_sd_type=="IMEX-RK")
+        {
+           //only implicit
+           integrator.set_imex_rhs(rhs_function,rhs_null_function);
+        }
+        else if(integration_sd_type=="EX-MRI" || 
+                integration_sd_type=="IM-MRI" ||
+                integration_sd_type=="IMEX-MRI")
+        {
+           //always assume reaction is the fast rhs
+           integrator.set_rhs(rhs_null_function);
+           integrator.set_fast_rhs(rhs_function);
+        }
+        else
+        {
+          amrex::Abort("Wrong sundials integration type in transpreact\n");
+        }
+    }
     // Advance from time to time + dt_lev
     //S_new/phi_new should have the new state
     integrator.advance(state_old, state_new, time, dt_lev); 
@@ -207,11 +237,11 @@ void TranspReact::compute_scalar_advection_flux(int specid,int lev, MultiFab& Sb
         for (MFIter mfi(Sborder, TilingIfNotGPU()); mfi.isValid(); ++mfi)
         {
             const Box& bx = mfi.tilebox();
-            Box bx_x = convert(bx, {AMREX_D_DECL(1, 0, 0)});
+            Box bx_x = mfi.nodaltilebox(0);
 #if AMREX_SPACEDIM > 1
-            Box bx_y = convert(bx, {AMREX_D_DECL(0, 1, 0)});
+            Box bx_y = mfi.nodaltilebox(1);
 #if AMREX_SPACEDIM == 3
-            Box bx_z = convert(bx, {0, 0, 1});
+            Box bx_z = mfi.nodaltilebox(2);
 #endif
 #endif
 
@@ -502,7 +532,13 @@ void TranspReact::implicit_solve_scalar(Real current_time, Real dt, int spec_id,
                 0, 1, num_grow);
 
         solution[ilev].setVal(0.0);
-        amrex::MultiFab::Copy(solution[ilev], specdata[ilev], 0, 0, 1, 0);
+        
+        //for some reason, the previous solution initialization
+        //fails MLMG, must be a tolerance thing
+        if(!steady_solve)
+        {
+            amrex::MultiFab::Copy(solution[ilev], specdata[ilev], 0, 0, 1, 0);
+        }
 
         // fill cell centered diffusion coefficients and rhs
         for (MFIter mfi(phi_new[ilev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
@@ -521,10 +557,10 @@ void TranspReact::implicit_solve_scalar(Real current_time, Real dt, int spec_id,
 
             amrex::ParallelFor(gbx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
 
-                    bcoeff_arr(i,j,k)=tr_transport::specDiff(i,j,k,captured_spec_id,sb_arr,
-                            dx,prob_lo,prob_hi,time,*localprobparm); 
+                bcoeff_arr(i,j,k)=tr_transport::specDiff(i,j,k,captured_spec_id,sb_arr,
+                                                         dx,prob_lo,prob_hi,time,*localprobparm); 
 
-                    });
+            });
         }
 
 
@@ -534,12 +570,12 @@ void TranspReact::implicit_solve_scalar(Real current_time, Real dt, int spec_id,
         for (int idim = 0; idim < AMREX_SPACEDIM; ++idim)
         {
             const BoxArray& ba = amrex::convert(bcoeff[ilev].boxArray(), 
-                    IntVect::TheDimensionVector(idim));
+                                                IntVect::TheDimensionVector(idim));
             face_bcoeff[idim].define(ba, bcoeff[ilev].DistributionMap(), 1, 0);
         }
         // true argument for harmonic averaging
         amrex::average_cellcenter_to_face(GetArrOfPtrs(face_bcoeff), 
-                bcoeff[ilev], geom[ilev], true);
+                                          bcoeff[ilev], geom[ilev], true);
 
 
         // set boundary conditions
@@ -569,19 +605,19 @@ void TranspReact::implicit_solve_scalar(Real current_time, Real dt, int spec_id,
                     if (bx.smallEnd(idim) == domain.smallEnd(idim))
                     {
                         amrex::ParallelFor(amrex::bdryLo(bx, idim), [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                                tr_boundaries::species_bc(i, j, k, idim, -1, 
-                                        captured_spec_id, sb_arr, bc_arr, robin_a_arr,
-                                        robin_b_arr, robin_f_arr, 
-                                        prob_lo, prob_hi, dx, time, *localprobparm);
+                            tr_boundaries::species_bc(i, j, k, idim, -1, 
+                                                      captured_spec_id, sb_arr, bc_arr, robin_a_arr,
+                                                      robin_b_arr, robin_f_arr, 
+                                                      prob_lo, prob_hi, dx, time, *localprobparm);
                         });
                     }
                     if (bx.bigEnd(idim) == domain.bigEnd(idim))
                     {
                         amrex::ParallelFor(amrex::bdryHi(bx, idim), [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
-                                tr_boundaries::species_bc(i, j, k, idim, +1, 
-                                                             captured_spec_id, sb_arr, bc_arr, robin_a_arr, 
-                                                             robin_b_arr, robin_f_arr,
-                                                             prob_lo, prob_hi, dx, time, *localprobparm);
+                            tr_boundaries::species_bc(i, j, k, idim, +1, 
+                                                      captured_spec_id, sb_arr, bc_arr, robin_a_arr, 
+                                                      robin_b_arr, robin_f_arr,
+                                                      prob_lo, prob_hi, dx, time, *localprobparm);
                         });
                     }
                 }

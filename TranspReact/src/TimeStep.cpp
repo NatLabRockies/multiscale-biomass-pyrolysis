@@ -48,6 +48,15 @@ void TranspReact::find_transp_timescales(int lev,amrex::Real cur_time,
     auto prob_lo = geom[lev].ProbLoArray();
     auto prob_hi = geom[lev].ProbHiArray();
 
+    GpuArray<int,NUM_SPECIES> steady_species;
+    GpuArray<int,NUM_SPECIES> unsolved_species;
+
+    for(int sp=0;sp<NUM_SPECIES;sp++)
+    {
+        steady_species[sp]=steadyspec[sp];
+        unsolved_species[sp]=unsolvedspec[sp];
+    }
+
     MultiFab& S_new = phi_new[lev];
     Real time=cur_time;
     int do_adv=do_advection;
@@ -71,11 +80,17 @@ void TranspReact::find_transp_timescales(int lev,amrex::Real cur_time,
                 amrex::Real maxvel=0.0;
                 for(int c=0;c<NUM_SPECIES;c++)
                 {
-                    amrex::Real dcoeff=tr_transport::specDiff(i,j,k,c,state_array,
-                                                              dx,prob_lo,prob_hi,time,*localprobparm); 
+                    amrex::Real dcoeff=0.0;
+                    amrex::Real specvel=0.0;
 
-                    amrex::Real specvel=tr_transport::specDiff(i,j,k,c,state_array,
-                                                               dx,prob_lo,prob_hi,time,*localprobparm); 
+                    if(!steady_species[c] && !unsolved_species[c])
+                    {
+                        dcoeff=tr_transport::specDiff(i,j,k,c,state_array,
+                                                      dx,prob_lo,prob_hi,time,*localprobparm); 
+
+                        specvel=tr_transport::specDiff(i,j,k,c,state_array,
+                                                       dx,prob_lo,prob_hi,time,*localprobparm); 
+                    }
 
                     if(amrex::Math::abs(dcoeff)>maxdcoeff)
                     {
@@ -110,6 +125,7 @@ void TranspReact::find_transp_timescales(int lev,amrex::Real cur_time,
     }
 
     amrex::Real max_diff    = diff.norm0(0,0,true);
+    amrex::Print()<<"max_diff:"<<max_diff<<"\n";
     if(max_diff > 0)
     {
         for (int i = 0; i < AMREX_SPACEDIM; i++) 

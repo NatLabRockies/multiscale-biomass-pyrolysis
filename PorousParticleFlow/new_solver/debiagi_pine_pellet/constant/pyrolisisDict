@@ -1,0 +1,1178 @@
+
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      pyrolisisDict;
+}
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+poreSize ${pore_size};
+
+nSubTimeSteps 10;
+
+species
+(
+	CH4
+	CH2OS
+	C6H10O5
+	CELL
+	CO
+	C2H5CHO
+	H2O
+	LIGCC
+	COS
+	GMSW
+	C5H8O4
+	LIGH
+	CH2OHCHO
+	XYHW
+	COSTIFFS
+	TANN
+	ITANN
+	FURAN
+	HCE2
+	C24H28O4
+	LIGO
+	C2H4S
+	CHAR
+	C6H5OH
+	CRESOL
+	C2H5OH
+	LVGS
+	CH3CHO
+	COH2S
+	TGL
+	H2
+	LIGOH
+	C2H3CHO
+	C2H6
+	CH3OH
+	CH3COCH3
+	CHOCHO
+	CH2OHCH2CHO
+	LIGC
+	C6H5OHS
+	CHARO
+	VANILLIN
+	U2ME12
+	HCOOH
+	C2H4
+	CH3OHS
+	C6H5OCH3
+	CO2
+	H2S
+	MLINO
+	CH2O
+	CH4S
+	LVG
+	CELLA
+	LIG
+	CH3CO2H
+	C6H6O3
+	CO2S
+	C2H6S
+	MOIST
+	XYGR
+	FURFURAL
+	HCE1
+);
+
+reactions
+(	Debiagi0
+	Debiagi1
+	Debiagi2
+	Debiagi3
+	Debiagi4
+	Debiagi5
+	Debiagi6
+	Debiagi7
+	Debiagi8
+	Debiagi9
+	Debiagi10
+	Debiagi11
+	Debiagi12
+	Debiagi13
+	Debiagi14
+	Debiagi15
+	Debiagi16
+	Debiagi17
+	Debiagi18
+	Debiagi19
+	Debiagi20
+	Debiagi21
+	Debiagi22
+	Debiagi23
+	Debiagi24
+	Debiagi25
+	Debiagi26
+	Debiagi27
+	Debiagi28
+	Debiagi29
+	Debiagi30
+	Debiagi31
+	Debiagi32
+	Debiagi33
+	Debiagi34
+);
+
+speciesCoeffs
+{
+
+    CH4
+	{
+		name CH4;
+        rho 0.5;
+        cp 3930.153226545421;
+        molWeight 16.04236;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    CH2OS
+	{
+		name CH2OS;
+        rho 1500.0;
+        cp 2260.17408956863;
+        molWeight 30.02568;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    C6H10O5
+	{
+		name C6H10O5;
+        rho 0.5;
+        cp 2224.71543152679;
+        molWeight 162.13940;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    CELL
+	{
+		name CELL;
+        rho 1500.0;
+        cp 2260.172300628789;
+        molWeight 162.13940;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    CO
+	{
+		name CO;
+        rho 0.5;
+        cp 1135.341131547169;
+        molWeight 28.01000;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    C2H5CHO
+	{
+		name C2H5CHO;
+        rho 0.5;
+        cp 2531.231178272933;
+        molWeight 58.07904;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    H2O
+	{
+		name H2O;
+        rho 0.5;
+        cp 2097.36244479716;
+        molWeight 18.01468;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    LIGCC
+	{
+		name LIGCC;
+        rho 1500.0;
+        cp 2260.1696019597725;
+        molWeight 258.27076;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    COS
+	{
+		name COS;
+        rho 1500.0;
+        cp 2260.150001749377;
+        molWeight 28.01000;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    GMSW
+	{
+		name GMSW;
+        rho 1500.0;
+        cp 2260.171894355671;
+        molWeight 132.11372;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    C5H8O4
+	{
+		name C5H8O4;
+        rho 0.5;
+        cp 2167.706699479407;
+        molWeight 132.11372;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    LIGH
+	{
+		name LIGH;
+        rho 1500.0;
+        cp 2260.1732000548986;
+        molWeight 436.45252;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    CH2OHCHO
+	{
+		name CH2OHCHO;
+        rho 0.5;
+        cp 1944.346044256267;
+        molWeight 60.05136;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    XYHW
+	{
+		name XYHW;
+        rho 1500.0;
+        cp 2260.171894355671;
+        molWeight 132.11372;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    COSTIFFS
+	{
+		name COSTIFFS;
+        rho 1500.0;
+        cp 2260.150001749377;
+        molWeight 28.01000;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    TANN
+	{
+		name TANN;
+        rho 1500.0;
+        cp 2260.164262390749;
+        molWeight 304.25208;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    ITANN
+	{
+		name ITANN;
+        rho 1500.0;
+        cp 4190.099439650568;
+        molWeight 164.11536;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    FURAN
+	{
+		name FURAN;
+        rho 0.5;
+        cp 2258.8114996075515;
+        molWeight 68.07436;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    HCE2
+	{
+		name HCE2;
+        rho 1500.0;
+        cp 2260.171894355671;
+        molWeight 132.11372;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    C24H28O4
+	{
+		name C24H28O4;
+        rho 0.5;
+        cp 1252.5162872973756;
+        molWeight 380.47952;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    LIGO
+	{
+		name LIGO;
+        rho 1500.0;
+        cp 2260.168835866096;
+        molWeight 422.38248;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    C2H4S
+	{
+		name C2H4S;
+        rho 1500.0;
+        cp 2260.201562374048;
+        molWeight 28.05336;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    CHAR
+	{
+		name CHAR;
+        rho 1500.0;
+        cp 2560.3440006529913;
+        molWeight 12.01100;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    C6H5OH
+	{
+		name C6H5OH;
+        rho 0.5;
+        cp 2265.6089049772254;
+        molWeight 94.11204;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    CRESOL
+	{
+		name CRESOL;
+        rho 0.5;
+        cp 2345.571127499705;
+        molWeight 108.13872;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    C2H5OH
+	{
+		name C2H5OH;
+        rho 0.5;
+        cp 2832.5109464387797;
+        molWeight 46.06804;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    LVGS
+	{
+		name LVGS;
+        rho 1500.0;
+        cp 2260.172300628789;
+        molWeight 162.13940;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    CH3CHO
+	{
+		name CH3CHO;
+        rho 0.5;
+        cp 2294.94566251668;
+        molWeight 44.05236;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    COH2S
+	{
+		name COH2S;
+        rho 1500.0;
+        cp 2260.17408956863;
+        molWeight 30.02568;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    TGL
+	{
+		name TGL;
+        rho 1500.0;
+        cp 2260.190298145633;
+        molWeight 897.40400;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    H2
+	{
+		name H2;
+        rho 0.5;
+        cp 14332.675142317854;
+        molWeight 2.01568;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    LIGOH
+	{
+		name LIGOH;
+        rho 1500.0;
+        cp 2260.1710265149827;
+        molWeight 378.37348;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    C2H3CHO
+	{
+		name C2H3CHO;
+        rho 0.5;
+        cp 2337.0162686890244;
+        molWeight 56.06336;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    C2H6
+	{
+		name C2H6;
+        rho 0.5;
+        cp 3573.7444389018374;
+        molWeight 30.06904;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    CH3OH
+	{
+		name CH3OH;
+        rho 0.5;
+        cp 2469.110893429988;
+        molWeight 32.04136;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    CH3COCH3
+	{
+		name CH3COCH3;
+        rho 0.5;
+        cp 2576.570594672648;
+        molWeight 58.07904;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    CHOCHO
+	{
+		name CHOCHO;
+        rho 0.5;
+        cp 1767.732444627073;
+        molWeight 58.03568;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    CH2OHCH2CHO
+	{
+		name CH2OHCH2CHO;
+        rho 0.5;
+        cp 2289.242360074079;
+        molWeight 74.07804;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    LIGC
+	{
+		name LIGC;
+        rho 1500.0;
+        cp 2260.1696019597725;
+        molWeight 258.27076;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    C6H5OHS
+	{
+		name C6H5OHS;
+        rho 1500.0;
+        cp 2260.1730574971725;
+        molWeight 94.11204;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    CHARO
+	{
+		name CHARO;
+        rho 1500.0;
+        cp 2560.3440075099675;
+        molWeight 28.01000;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    VANILLIN
+	{
+		name VANILLIN;
+        rho 0.5;
+        cp 2114.4652305935624;
+        molWeight 152.14772;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    U2ME12
+	{
+		name U2ME12;
+        rho 0.5;
+        cp 2880.1497289752806;
+        molWeight 210.31348;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    HCOOH
+	{
+		name HCOOH;
+        rho 0.5;
+        cp 1507.7819871152346;
+        molWeight 46.02468;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    C2H4
+	{
+		name C2H4;
+        rho 0.5;
+        cp 2982.0840379906517;
+        molWeight 28.05336;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    CH3OHS
+	{
+		name CH3OHS;
+        rho 1500.0;
+        cp 2260.1951441267793;
+        molWeight 32.04136;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    C6H5OCH3
+	{
+		name C6H5OCH3;
+        rho 0.5;
+        cp 2505.384778508832;
+        molWeight 108.13872;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    CO2
+	{
+		name CO2;
+        rho 0.5;
+        cp 1173.781241445316;
+        molWeight 44.00900;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    H2S
+	{
+		name H2S;
+        rho 1500.0;
+        cp 2260.5088111034365;
+        molWeight 2.01568;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    MLINO
+	{
+		name MLINO;
+        rho 0.5;
+        cp 2963.407054495499;
+        molWeight 294.47356;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    CH2O
+	{
+		name CH2O;
+        rho 0.5;
+        cp 1863.5820408895174;
+        molWeight 30.02568;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    CH4S
+	{
+		name CH4S;
+        rho 1500.0;
+        cp 2260.2401704717886;
+        molWeight 16.04236;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    LVG
+	{
+		name LVG;
+        rho 0.5;
+        cp 2224.71543152679;
+        molWeight 162.13940;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    CELLA
+	{
+		name CELLA;
+        rho 1500.0;
+        cp 2260.172300628789;
+        molWeight 162.13940;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    LIG
+	{
+		name LIG;
+        rho 1500.0;
+        cp 2260.170840299369;
+        molWeight 208.21108;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    CH3CO2H
+	{
+		name CH3CO2H;
+        rho 0.5;
+        cp 2115.4422130130274;
+        molWeight 60.05136;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    C6H6O3
+	{
+		name C6H6O3;
+        rho 0.5;
+        cp 1997.6353727001713;
+        molWeight 126.11004;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    CO2S
+	{
+		name CO2S;
+        rho 1500.0;
+        cp 2260.1499995693666;
+        molWeight 44.00900;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    C2H6S
+	{
+		name C2H6S;
+        rho 1500.0;
+        cp 2260.2221590885715;
+        molWeight 30.06904;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    MOIST
+	{
+		name MOIST;
+        rho 1500.0;
+        cp 2260.1901490266378;
+        molWeight 18.01468;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    XYGR
+	{
+		name XYGR;
+        rho 1500.0;
+        cp 2260.171894355671;
+        molWeight 132.11372;
+        kappa 0.4;
+        gas false;
+    }
+                    
+    FURFURAL
+	{
+		name FURFURAL;
+        rho 0.5;
+        cp 1997.6912522303876;
+        molWeight 96.08436;
+        kappa 0.2;
+        gas true;
+    }
+                    
+    HCE1
+	{
+		name HCE1;
+        rho 1500.0;
+        cp 2260.171894355671;
+        molWeight 132.11372;
+        kappa 0.4;
+        gas false;
+    }
+                    
+}
+reactionCoeffs
+{
+	Debiagi0
+    {
+    reactants ( CELL );
+    reactant_stochiometric_coefficients (1);
+    products ( CELLA);
+    product_stochiometric_coefficients (1);
+
+    A           7.000E+13;
+    Ta          22644.88651288675;
+}
+
+
+	Debiagi1
+    {
+    reactants ( CELLA );
+    reactant_stochiometric_coefficients (1);
+    products ( CH2OHCHO CHOCHO CH3CHO C6H6O3 CH3OH CH2O CO COS CO2 H2 H2O CH2OS HCOOH CH2OHCH2CHO CH4 H2S CHAR CH3COCH3 FURFURAL FURAN);
+    product_stochiometric_coefficients (0.3251 0.02 0.0431 0.08 0.14 0.2637 0.08 0.06 0.29 0.0025 1.8547 0.05 0.02 0.026 0.03 0.024 1.1 0.1323 0.287 0.2);
+
+    A           1.500E+06;
+    Ta          10064.394005727445;
+}
+
+
+	Debiagi2
+    {
+    reactants ( CELLA );
+    reactant_stochiometric_coefficients (1);
+    products ( LVG LVGS C6H10O5);
+    product_stochiometric_coefficients (0.6 0.2 0.2);
+
+    A           5.000E+04;
+    Ta          7296.6856541523985;
+}
+
+
+	Debiagi3
+    {
+    reactants ( CELL );
+    reactant_stochiometric_coefficients (1);
+    products ( H2O CHAR COH2S CH2OS COS H2S H2);
+    product_stochiometric_coefficients (4.45 5.45 0.12 0.18 0.25 0.125 0.125);
+
+    A           8.000E+07;
+    Ta          15599.810708877541;
+}
+
+
+	Debiagi4
+    {
+    reactants ( GMSW );
+    reactant_stochiometric_coefficients (1);
+    products ( HCE1 HCE2);
+    product_stochiometric_coefficients (0.70 0.30);
+
+    A           1.000E+10;
+    Ta          15599.810708877541;
+}
+
+
+	Debiagi5
+    {
+    reactants ( XYHW );
+    reactant_stochiometric_coefficients (1);
+    products ( HCE1 HCE2);
+    product_stochiometric_coefficients (0.35 0.65);
+
+    A           1.250E+11;
+    Ta          15801.09858899209;
+}
+
+
+	Debiagi6
+    {
+    reactants ( XYGR );
+    reactant_stochiometric_coefficients (1);
+    products ( HCE1 HCE2);
+    product_stochiometric_coefficients (0.12 0.88);
+
+    A           1.250E+11;
+    Ta          15096.59100859117;
+}
+
+
+	Debiagi7
+    {
+    reactants ( HCE1 );
+    reactant_stochiometric_coefficients (1);
+    products ( C5H8O4 C6H10O5 FURFURAL C6H6O3 CO2 CH4 H2O CH2OHCH2CHO CHOCHO H2 CHAR);
+    product_stochiometric_coefficients (.25 .25 .16 .13 0.09 0.1 .54 0.06 .1 0.02 0.1);
+
+    A           1.600E+01;
+    Ta          6491.534133694202;
+}
+
+
+	Debiagi8
+    {
+    reactants ( HCE1 );
+    reactant_stochiometric_coefficients (1);
+    products ( H2O CO2 HCOOH CO COS CO2S H2S CH2O CH2OS CH4 CH4S C2H4 C2H4S CHAR COH2S H2 C2H6S);
+    product_stochiometric_coefficients (0.4 .39 0.05 .49 .01 .51 .05 .4 .43 0.3 0.325 0.1 .075 .975 0.37 0.1 0.2);
+
+    A           3.000E-03;
+    Ta          1811.5909210309403;
+}
+
+
+	Debiagi9
+    {
+    reactants ( HCE2 );
+    reactant_stochiometric_coefficients (1);
+    products ( CO CO2 CH4 H2 H2O C2H5OH CH2OHCHO CH3CO2H HCOOH FURFURAL CH4S CH3OHS C2H4S CO2S CH2OS CHAR H2S COH2S C2H6S);
+    product_stochiometric_coefficients (0 0.2898 0 0 0.1665 .0661 .0423 .315 .0178 .145 .1362 .2312 .0158 .45 .2337 0.7662 .1 0.7792 0.2445);
+
+    A           7.000E+09;
+    Ta          15348.200858734355;
+}
+
+
+	Debiagi10
+    {
+    reactants ( LIGH );
+    reactant_stochiometric_coefficients (1);
+    products ( LIGOH C2H5CHO C2H4 CH2OHCHO CO C2H6);
+    product_stochiometric_coefficients (1 0.5 0.4 0.2 .1 .1);
+
+    A           6.700E+12;
+    Ta          18870.73876073896;
+}
+
+
+	Debiagi11
+    {
+    reactants ( LIGO );
+    reactant_stochiometric_coefficients (1);
+    products ( LIGOH CO2);
+    product_stochiometric_coefficients (1 1);
+
+    A           3.300E+08;
+    Ta          12832.102357302492;
+}
+
+
+	Debiagi12
+    {
+    reactants ( LIGC );
+    reactant_stochiometric_coefficients (1);
+    products ( LIGCC VANILLIN C6H5OCH3 C2H4 H2O CH2OS COH2S CH2O CO CO2 CH4S CHAR C2H6S H2S);
+    product_stochiometric_coefficients (0.35 0.1 0.1 0.27 1 0.17 0.4 0.22 0.21 0.1 0.36 5.85 .2 0.1);
+
+    A           1.000E+11;
+    Ta          18719.772850653047;
+}
+
+
+	Debiagi13
+    {
+    reactants ( LIGCC );
+    reactant_stochiometric_coefficients (1);
+    products ( VANILLIN CRESOL C6H5OCH3 CH2OHCHO H2O CH4 C2H4 H2 CO COS CHAR C2H6);
+    product_stochiometric_coefficients (0.25 .15 0.15 0.35 0.7 0.45 0.3 0.7 1.15 0.4 6.80 0.4);
+
+    A           1.000E+04;
+    Ta          12479.848567102032;
+}
+
+
+	Debiagi14
+    {
+    reactants ( LIGOH );
+    reactant_stochiometric_coefficients (1);
+    products ( LIG H2O CH4 CH3OH CH3OHS CO2 CO COS HCOOH CH2OS COH2S CH4S C2H4S C2H6S CHAR C24H28O4 C2H3CHO);
+    product_stochiometric_coefficients (.9 1 .1 0.6 0.3 0.05 0.65 .6 0.05 0.45 0.40 0.25 0.1 0.15 4.25 .025 .1);
+
+    A           1.500E+08;
+    Ta          16103.030409163914;
+}
+
+
+	Debiagi15
+    {
+    reactants ( LIG );
+    reactant_stochiometric_coefficients (1);
+    products ( VANILLIN C6H5OCH3 C2H4 CO CH3CHO CHAR);
+    product_stochiometric_coefficients (1 0.1 0.5 0.6 0.3 0.1);
+
+    A           4.000E+00;
+    Ta          6038.636403436467;
+}
+
+
+	Debiagi16
+    {
+    reactants ( LIG );
+    reactant_stochiometric_coefficients (1);
+    products ( H2O CO CO2 CH4 CH2O COS CH4S C2H4S CH3OHS CH2OS COH2S CHAR H2S);
+    product_stochiometric_coefficients (0.6 0.3 0.1 .2 .4 0.2 .4 0.5 .4 1.25 0.65 6.1 0.1);
+
+    A           8.300E-02;
+    Ta          4025.7576022909784;
+}
+
+
+	Debiagi17
+    {
+    reactants ( LIG );
+    reactant_stochiometric_coefficients (1);
+    products ( H2O CO CH4 CH2O C2H4 CH3OH CHAR C2H6);
+    product_stochiometric_coefficients (.6 2.6 0.6 .4 0.75 .4 4.5 0.5);
+
+    A           1.500E+09;
+    Ta          15851.420559020728;
+}
+
+
+	Debiagi18
+    {
+    reactants ( TGL );
+    reactant_stochiometric_coefficients (1);
+    products ( C2H3CHO MLINO U2ME12);
+    product_stochiometric_coefficients (1 2.5 0.5);
+
+    A           7.000E+12;
+    Ta          22997.140303087213;
+}
+
+
+	Debiagi19
+    {
+    reactants ( TANN );
+    reactant_stochiometric_coefficients (1);
+    products ( C6H5OH C6H5OHS COS H2O ITANN);
+    product_stochiometric_coefficients (.85 .15 1 1 1);
+
+    A           2.000E+01;
+    Ta          5032.197002863722;
+}
+
+
+	Debiagi20
+    {
+    reactants ( ITANN );
+    reactant_stochiometric_coefficients (1);
+    products ( CHAR CO H2O CH2OS COH2S);
+    product_stochiometric_coefficients (5. 2 1 0.55 0.45);
+
+    A           1.000E+03;
+    Ta          12580.492507159306;
+}
+
+
+	Debiagi21
+    {
+    reactants ( CO2S );
+    reactant_stochiometric_coefficients (1);
+    products ( CO2);
+    product_stochiometric_coefficients (1);
+
+    A           1.000E+06;
+    Ta          12328.88265701612;
+}
+
+
+	Debiagi22
+    {
+    reactants ( COS );
+    reactant_stochiometric_coefficients (1);
+    products ( CO);
+    product_stochiometric_coefficients (1);
+
+    A           5.000E+12;
+    Ta          26419.034265034545;
+}
+
+
+	Debiagi23
+    {
+    reactants ( CH3OHS );
+    reactant_stochiometric_coefficients (1);
+    products ( CH3OH);
+    product_stochiometric_coefficients (1);
+
+    A           2.000E+12;
+    Ta          25160.985014318612;
+}
+
+
+	Debiagi24
+    {
+    reactants ( CH2OS );
+    reactant_stochiometric_coefficients (1);
+    products ( CHAR H2O CO H2);
+    product_stochiometric_coefficients (0.8 0.8 .2 .2);
+
+    A           6.000E+10;
+    Ta          25160.985014318612;
+}
+
+
+	Debiagi25
+    {
+    reactants ( C2H6S );
+    reactant_stochiometric_coefficients (1);
+    products ( C2H6);
+    product_stochiometric_coefficients (1);
+
+    A           1.000E+11;
+    Ta          26167.424414891357;
+}
+
+
+	Debiagi26
+    {
+    reactants ( CH4S );
+    reactant_stochiometric_coefficients (1);
+    products ( CH4);
+    product_stochiometric_coefficients (1);
+
+    A           1.000E+11;
+    Ta          26670.64411517773;
+}
+
+
+	Debiagi27
+    {
+    reactants ( C2H4S );
+    reactant_stochiometric_coefficients (1);
+    products ( C2H4);
+    product_stochiometric_coefficients (1);
+
+    A           1.000E+11;
+    Ta          27173.8638154641;
+}
+
+
+	Debiagi28
+    {
+    reactants ( C6H5OHS );
+    reactant_stochiometric_coefficients (1);
+    products ( C6H5OH);
+    product_stochiometric_coefficients (1);
+
+    A           1.500E+12;
+    Ta          27677.083515750473;
+}
+
+
+	Debiagi29
+    {
+    reactants ( COH2S );
+    reactant_stochiometric_coefficients (1);
+    products ( CHAR H2O CO H2 COSTIFFS);
+    product_stochiometric_coefficients (0.2 0.2 0.4 0.8 0.4);
+
+    A           1.000E+09;
+    Ta          29689.962316895966;
+}
+
+
+	Debiagi30
+    {
+    reactants ( COSTIFFS );
+    reactant_stochiometric_coefficients (1);
+    products ( CO CHARO);
+    product_stochiometric_coefficients (0.8 0.2);
+
+    A           1.800E+08;
+    Ta          32709.2805186142;
+}
+
+
+	Debiagi31
+    {
+    reactants ( H2S );
+    reactant_stochiometric_coefficients (1);
+    products ( H2);
+    product_stochiometric_coefficients (1);
+
+    A           1.800E+08;
+    Ta          35225.37902004606;
+}
+
+
+	Debiagi32
+    {
+    reactants ( LVGS );
+    reactant_stochiometric_coefficients (1);
+    products ( LVG);
+    product_stochiometric_coefficients (1);
+
+    A           9.500E-02;
+    Ta          5032.197002863722;
+}
+
+
+	Debiagi33
+    {
+    reactants ( LVGS );
+    reactant_stochiometric_coefficients (1);
+    products ( LVG);
+    product_stochiometric_coefficients (1);
+
+    A           6.000E+11;
+    Ta          22644.88651288675;
+}
+
+
+	Debiagi34
+    {
+    reactants ( MOIST );
+    reactant_stochiometric_coefficients (1);
+    products ( H2O);
+    product_stochiometric_coefficients (1);
+
+    A           1.000E+00;
+    Ta          4025.7576022909784;
+}
+
+}
+
+// ************************************************************************* //

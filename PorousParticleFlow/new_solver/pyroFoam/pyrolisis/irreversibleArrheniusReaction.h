@@ -18,6 +18,7 @@ class irreversibleArrheniusReaction
     scalar m_A;
     scalar m_Ta;
     scalar m_beta;
+    scalar m_Q; // Heat of reaction in J/Kg
 
     List<int> m_reactant_index;
     List<int> m_product_index;
@@ -29,7 +30,13 @@ public:
     irreversibleArrheniusReaction(const word& name, const dictionary& dict, const List<word>& species_name);
     ~irreversibleArrheniusReaction();
 
-    scalarField computeMolarSources(const scalar& T, const scalarField& species) const;
+    scalar computeSources(
+        const scalar& T,
+        const scalarField& molarFraction,
+        const scalarField& molarWeight,
+        scalarField& ndot
+    ) const;
+
 };
 
 }

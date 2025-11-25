@@ -1,0 +1,51 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+field "alpha.water";
+
+#include "${FOAM_CASE}/constant/globalVars"
+porosityval  0.16;
+type composedFunction;
+mode subtract;
+composedFunctions
+{
+    cylinder
+    {
+	
+        p1 ($xmid $ymid $cylbotz);
+        p2 ($xmid $ymid $cyltopz);
+        radius $cylrad;
+    }
+
+    sphere
+    {
+        type sphere;
+        radius 0.4;
+        centre (0.5 0.8 0.5);
+        scale 1;
+    }
+
+    sphere2
+    {
+        type sphere;
+        radius 0.4;
+        centre (0.5 0.5 0.5);
+    }
+}
+
+
+// ************************************************************************* //

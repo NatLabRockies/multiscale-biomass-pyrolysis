@@ -10,6 +10,16 @@ Kp = tensor::I
         ( sqr(poro) * poro * sqr(pore_size) ) 
     );
 
+/*
+   forAll(Kp, cellI)
+   {
+        Kp[cellI] = tensor::I;
+        Kp[cellI].xx() = mu[cellI]/   sqr(pore_size);
+        Kp[cellI].yy() = ...
+        Kp[cellI].zz() = 0;    
+   }
+*/
+
 Kp.correctBoundaryConditions();
 
 tmp<fvVectorMatrix> tUEqn

@@ -11,6 +11,7 @@ irreversibleArrheniusReaction::irreversibleArrheniusReaction(const word& name, c
     m_A(readScalar(dict.lookup("A"))),
     m_Ta(readScalar(dict.lookup("Ta"))),
     m_beta(dict.lookupOrDefault<scalar>("beta",0.)),
+    m_Q(readScalar(dict.lookup("heatOfReaction"))),
     m_reactant_index(m_reactant_stoch.size(), -1),
     m_product_index(m_product_stoch.size(), -1)
 {
@@ -86,21 +87,35 @@ scalar irreversibleArrheniusReaction::computeReactionRate(const scalar& T, const
     return k * prodCnu;
 }
 
-scalarField irreversibleArrheniusReaction::computeMolarSources(const scalar& T, const scalarField& species) const
+scalar irreversibleArrheniusReaction::computeSources(
+    const scalar& T,
+    const scalarField& molarFraction,
+    const scalarField& molarWeight,
+    scalarField& ndot
+) const
 {
-    scalar R = computeReactionRate(T, species);
-
-    scalarField molarSources(species.size(), 0.);
+    scalar R = computeReactionRate(T, molarFraction);
 
     forAll(m_reactant_index, id)
     {
-        molarSources[m_reactant_index[id]] = -m_reactant_stoch[id] * R;
+        ndot[m_reactant_index[id]] += -m_reactant_stoch[id] * R;
     }
 
     forAll(m_product_index, id)
     {
-        molarSources[m_product_index[id]] = m_product_stoch[id] * R;
+        ndot[m_product_index[id]] += m_product_stoch[id] * R;
     }
 
-    return molarSources;
+    scalar mdot = 0.; // Mass reacted
+
+    // Compute Kg/m3 reacted
+    // Notice that the magnitude of the time derivative of the molar density
+    // of the reactant is taken. This means that mdot represents the total
+    // mass that underwent this reaction per unit time.
+    forAll(m_reactant_index, id)
+    {
+        mdot += mag(ndot[m_reactant_index[id]]) * molarWeight[m_reactant_index[id]];
+    }
+
+    return m_Q * mdot;
 }

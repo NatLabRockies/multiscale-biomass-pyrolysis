@@ -23,7 +23,7 @@ forAll(Y, i)
         (
             fvm::ddt(rho, Yi)
           + mvConvection->fvmDiv(phi, Yi)
-//          + thermophysicalTransport->divj(Yi)
+          + thermophysicalTransport->divj(Yi)
          ==
             reaction->R(Yi)
           + fvModels.source(rho, Yi)

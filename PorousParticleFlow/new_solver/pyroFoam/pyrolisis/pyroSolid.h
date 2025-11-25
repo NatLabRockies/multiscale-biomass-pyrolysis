@@ -15,10 +15,13 @@ private:
   const fvMesh &m_mesh;
   IOdictionary m_dict;
   volScalarField m_porosity;
+  volScalarField m_rhoField;
   volScalarField m_T;
   volScalarField m_rhoCp;
+  volScalarField m_Qdot; //Heat of reaction
  // volTensorField m_Kp;
   volScalarField m_htc;
+  volScalarField m_kappa_tot;
   label m_nSubTimeSteps;
   scalar m_poreSize;
   List<word> m_speciesName;

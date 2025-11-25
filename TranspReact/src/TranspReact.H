@@ -145,6 +145,8 @@ public:
 
     amrex::Real dt_max=1e50;
     amrex::Real dt_min=1e-50;
+    std::string integration_type="ForwardEuler";
+    std::string integration_sd_type="ERK";
 
     // array of multifabs to store the solution at each level of refinement
     // after advancing a level we use "swap".

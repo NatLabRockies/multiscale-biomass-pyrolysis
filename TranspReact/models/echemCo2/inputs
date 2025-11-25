@@ -1,0 +1,85 @@
+max_step  = 5000
+stop_time = 1e-5
+
+# PROBLEM SIZE & GEOMETRY
+geometry.is_periodic =  0  0  0
+geometry.coord_sys   =  0       # 0 => cart
+geometry.prob_lo     =  0.0    0.0   0.0
+geometry.prob_hi     =  12e-7  6e-7  6e-7
+amr.n_cell           =  128 64 64
+
+# VERBOSITY
+amr.v              = 1       # verbosity in Amr
+
+# REFINEMENT
+amr.max_level       = 1      # maximum level number allowed
+amr.blocking_factor = 2       # block factor in grid generation
+amr.max_grid_size   = 4096
+
+amr.regrid_int      = 1       # how often to regrid
+
+# TIME STEP CONTROL
+tr.dt             = 1e-8
+
+# Tagging
+tr.tagged_vars = Ionomer 
+tr.Ionomer_refine = 1e20
+tr.Ionomer_refinegrad = 0.01
+
+#0 - periodic
+#1 - Dirichlet
+#2 - Homogenous Neumann
+#3 - Inhomogenous Neumann
+#4 - Robin
+
+tr.default_bc_lo = 2 2 2
+tr.default_bc_hi = 2 2 2
+
+tr.Potential_bc_lo = 1 2 2
+tr.Potential_bc_hi = 1 2 2
+
+tr.CO2_bc_lo = 3 2 2
+tr.CO2_bc_hi = 1 2 2
+
+tr.CO_bc_lo = 3 2 2
+tr.CO_bc_hi = 2 2 2
+
+tr.OHm_bc_lo = 3 2 2
+tr.OHm_bc_hi = 1 2 2
+
+tr.HCOOm_bc_lo = 3 2 2
+tr.HCOOm_bc_hi = 2 2 2
+
+tr.Kp_bc_lo = 3 2 2
+tr.Kp_bc_hi = 1 2 2
+
+tr.Hp_bc_lo = 3 2 2
+tr.Hp_bc_hi = 3 2 2
+
+# PLOTFILES
+amr.plot_file  = plt    # root name of plot file
+amr.plot_int   = 20     # number of timesteps between plot files
+
+# CHECKPOINT
+amr.chk_file = chk      # root name of checkpoint file
+amr.chk_int  = -1       # number of timesteps between checkpoint files
+
+tr.split_chemistry=0
+integration.type="SUNDIALS"
+integration.sundials.type="IM-MRI"
+#integration.sundials.method="ARKODE_ARK2_DIRK_3_1_2"
+#integration.sundials.method="ARKODE_BACKWARD_EULER_1_1"
+#integration.sundials.method="ARKODE_IMPLICIT_MIDPOINT_1_2"
+#integration.type="RungeKutta"
+#integration.rk.type=3
+
+tr.unsolved_species_ids=11 12 13 14 15 16 17
+#tr.unsolved_species_ids= 0 1 2 3 4 5 6 7 8 9 11 12 13 14 15 16 17
+tr.steady_species_ids=10
+tr.transform_vars=1
+prob.flat_interface=1
+prob.koh_init=1.0e-1
+prob.tmap_init=1.1e-1
+prob.co2_boundary=1.0
+prob.sourcefac=1e-4
+prob.catpot=0.0

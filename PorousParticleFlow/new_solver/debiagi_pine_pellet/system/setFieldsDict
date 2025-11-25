@@ -1,0 +1,59 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+porosityval  0.16;
+
+
+defaultFieldValues
+(
+    volScalarFieldValue T 760
+    volScalarFieldValue porosity 1
+    volScalarFieldValue CELL.solid 0
+    volScalarFieldValue LIGH.solid 0
+    volScalarFieldValue GMSW.solid 0
+    volScalarFieldValue LIGO.solid 0
+    volScalarFieldValue TGL.solid 0
+    volScalarFieldValue MOIST.solid 0
+    volVectorFieldValue U (0.1750 0.0 0.0)
+
+);
+
+regions
+(
+    cylinderToCell
+    {
+        p1 ($xmid $ymid $cylbotz);
+        p2 ($xmid $ymid $cyltopz);
+        radius $cylrad;
+        fieldValues
+        (
+            volScalarFieldValue T 760
+            volScalarFieldValue porosity $porosityval
+	    volScalarFieldValue CELL.solid #calc "$cell_frac * ( 1.0 - $porosityval )"
+	    volScalarFieldValue LIGH.solid #calc "$ligh_frac * ( 1.0 - $porosityval )"
+	    volScalarFieldValue GMSW.solid #calc "$gmsw_frac * ( 1.0 - $porosityval )"
+	    volScalarFieldValue LIGO.solid #calc "$ligo_frac * ( 1.0 - $porosityval )"
+	    volScalarFieldValue TGL.solid #calc "$tgl_frac * ( 1.0 - $porosityval )"
+	    volScalarFieldValue MOIST.solid #calc "$moist_frac * ( 1.0 - $porosityval )"
+            volVectorFieldValue U (0.0 0.0 0.0)
+
+        );
+    }
+);
+
+// ************************************************************************* //

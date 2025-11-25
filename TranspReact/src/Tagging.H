@@ -60,8 +60,11 @@ void stategrad_based_refinement(
         gradv[2] = amrex::max(gradzplus, gradzminus);
 #endif
 #endif
-
+#if AMREX_SPACEDIM > 1
         if (amrex::max(AMREX_D_DECL(gradv[0], gradv[1], gradv[2])) > refine_phigrad[c])
+#else
+        if (gradv[0] > refine_phigrad[c])
+#endif
         {
             tag(i, j, k) = tagval;
         }

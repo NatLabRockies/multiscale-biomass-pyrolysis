@@ -309,6 +309,14 @@ void TranspReact::ReadParameters()
         steady_specid_list.clear();
         unsolved_specid_list.clear();
 
+        if(split_chemistry)
+        {
+           ParmParse pp_int("integration");
+           pp_int.query("type",integration_type);
+           ParmParse pp_int_sd("integration.sundials");
+           pp_int_sd.query("type",integration_sd_type);
+        }
+
     }
 }
 
