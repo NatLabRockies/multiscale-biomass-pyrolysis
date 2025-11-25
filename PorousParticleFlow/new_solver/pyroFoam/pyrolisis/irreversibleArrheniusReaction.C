@@ -11,7 +11,7 @@ irreversibleArrheniusReaction::irreversibleArrheniusReaction(const word& name, c
     m_A(readScalar(dict.lookup("A"))),
     m_Ta(readScalar(dict.lookup("Ta"))),
     m_beta(dict.lookupOrDefault<scalar>("beta",0.)),
-    m_Q(readScalar(dict.lookup("heatOfReaction"))),
+    m_Q(dict.lookupOrDefault<scalar>("heatOfReaction",0.)),
     m_reactant_index(m_reactant_stoch.size(), -1),
     m_product_index(m_product_stoch.size(), -1)
 {
