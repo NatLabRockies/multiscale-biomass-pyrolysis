@@ -67,6 +67,19 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
         m_mesh,
         dimensionedScalar("rhoCp",dimEnergy/dimTemperature/dimVolume,0.)
     ),
+    m_Qdot
+    (
+        IOobject
+        (
+            "Qdot.solid",
+            m_mesh.time().timeName(),
+            m_mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        m_mesh,
+        dimensionedScalar("Qdot",dimEnergy/dimTime/dimVolume,0.)
+    ),
     // m_Kp
     // (
     //     IOobject
@@ -91,7 +104,7 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
             IOobject::AUTO_WRITE
         ),
         m_mesh,
-        dimensionedScalar("htc",dimPower/dimVolume/dimTemperature,0.)   
+        dimensionedScalar("htc",dimPower/dimVolume/dimTemperature,0.)
     ),
     m_kappa_tot
     (
@@ -104,8 +117,8 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
             IOobject::AUTO_WRITE
         ),
         m_mesh,
-        dimensionedScalar("kappa",dimPower/dimLength/dimTemperature,0.)   
-    ),  
+        dimensionedScalar("kappa",dimPower/dimLength/dimTemperature,0.)
+    ),
     m_nSubTimeSteps(m_dict.lookupOrDefault<label>("nSubTimeSteps",1)),
     m_poreSize(readScalar(m_dict.lookup("poreSize"))),
     m_speciesName(m_dict.lookup("species")),
@@ -149,7 +162,7 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
         m_is_gas[specieI].first = speciesDict.lookupOrDefault<bool>("gas",false);
 
         m_addToPoro[specieI] = speciesDict.lookupOrDefault<bool>("addToPorosity",true);
-        
+
         if (m_is_gas[specieI].first)
         {
             m_is_gas[specieI].second = m_reactionRates.size();
@@ -168,7 +181,7 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
                     ),
                     m_mesh,
                     dimensionedScalar("Rdot",dimDensity/dimTime,0.)
-                )            
+                )
             );
         }
 
@@ -176,7 +189,7 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
         {
             m_rhoCp[cellI] += m_species[specieI][cellI]*m_rho[specieI]*m_cp[specieI];
         }
-        
+
     }
 
     m_rhoCp.correctBoundaryConditions();
@@ -186,14 +199,14 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
     List<word> reactionList(m_dict.lookup("reactions"));
 
     Info << "Found reactions: " << reactionList << endl;
-    
+
     m_reactions.resize(reactionList.size());
 
     forAll(reactionList, reactI)
     {
         if( !m_dict.subDict("reactionCoeffs").found(reactionList[reactI]) )
         {
-            FatalErrorInFunction << "Cannot find reaction " << reactionList[reactI] << "\n" << abort(FatalError);            
+            FatalErrorInFunction << "Cannot find reaction " << reactionList[reactI] << "\n" << abort(FatalError);
         }
 
         m_reactions.set (
@@ -204,7 +217,7 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
                 m_dict.subDict("reactionCoeffs").subDict(reactionList[reactI]),
                 m_speciesName
             )
-        );        
+        );
     }
 }
 
@@ -214,9 +227,9 @@ pyroSolid::~pyroSolid()
 void pyroSolid::evolve()
 {
 //    updateKp();
-    
+
     solveEnergy();
-    
+
     Info << "Updating solid composition" << endl;
 
     scalarField Y(m_species.size(),0.);
@@ -241,6 +254,8 @@ void pyroSolid::evolve()
             continue;
         }
 
+        m_Qdot[cellI] = 0.; // Reset heat of reaction
+
         scalar dt = m_mesh.time().deltaT().value();
 
         scalar sub_dt = dt / m_nSubTimeSteps;
@@ -257,11 +272,13 @@ void pyroSolid::evolve()
         /* Use Euler marching */
         for (label ts = 0; ts < m_nSubTimeSteps; ts++)
         {
-            scalarField ndot(m_species.size(),0.);
+            ndot *= 0.;
 
             forAll(m_reactions, reactI)
             {
-                ndot += m_reactions[reactI].computeMolarSources(m_T[cellI], Y);
+                // This updates ndot and adds the heat of reaction for m_reactions[reactI] to
+                // m_Qdot. This is added every sub time step.
+                m_Qdot[cellI] += m_reactions[reactI].computeSources(m_T[cellI], Yn, m_molWeight, ndot);
             }
 
             Y += sub_dt * ndot;
@@ -280,7 +297,7 @@ void pyroSolid::evolve()
             {
                 m_reactionRates[m_is_gas[specieI].second][cellI] = ntot[specieI] *  m_molWeight[specieI];
                 //Info << "ndot " << m_species[specieI].name() << ": " << ntot[specieI] << endl;
-                m_species[specieI][cellI] = 0.;             
+                m_species[specieI][cellI] = 0.;
             }
         }
 
@@ -294,14 +311,14 @@ void pyroSolid::evolve()
             vol_species += m_species[specieI][cellI];
             mass_species += m_species[specieI][cellI] * m_rho[specieI];
         }
-        
+
         m_porosity[cellI] = 1.0 - vol_species;
         m_rhoField[cellI] = mass_species;
     }
 
     m_porosity.correctBoundaryConditions();
     m_rhoField.correctBoundaryConditions();
-    
+
 }
 
 const volScalarField& pyroSolid::porosity()
@@ -331,7 +348,7 @@ bool pyroSolid::isGasTransferSpecie(const word& name)
     if (id == -1)
     {
         FatalErrorInFunction << "Error: unknown gas specie " << name << "\n" << abort(FatalError);
-    } 
+    }
 
     return m_is_gas[id].first;
 }
@@ -343,7 +360,7 @@ const volScalarField& pyroSolid::RR(const word& name)
     if (id == -1)
     {
         FatalErrorInFunction << "Error: unknown gas specie " << name << "\n" << abort(FatalError);
-    } 
+    }
 
     Info << "Gas specie " << name  << " id: " << m_is_gas[id].second << " transfer mass: " << fvc::domainIntegrate(m_reactionRates[m_is_gas[id].second]) << endl;
     return m_reactionRates[m_is_gas[id].second];
@@ -354,7 +371,7 @@ const scalar& pyroSolid::poreSize()
     return m_poreSize;
 }
 
-// void pyroSolid::updateKp() 
+// void pyroSolid::updateKp()
 // {
 //     //- Basic Darcy for now
 
@@ -362,20 +379,20 @@ const scalar& pyroSolid::poreSize()
 
 //     forAll(m_Kp, cellI)
 //     {
-//         m_Kp[cellI] =  tensor::I 
-//             * mu[cellI] 
+//         m_Kp[cellI] =  tensor::I
+//             * mu[cellI]
 //             * (
 //                 (150. * (m_porosity[cellI]) )
 //                 /
-//                 sqr(m_porosity[cellI]) * m_porosity[cellI] * sqr(m_poreSize) 
+//                 sqr(m_porosity[cellI]) * m_porosity[cellI] * sqr(m_poreSize)
 //             );
 //     }
 
 //     m_Kp.correctBoundaryConditions();
-    
+
 // }
 
-void pyroSolid::updateHTC() 
+void pyroSolid::updateHTC()
 {
     const auto& mu = m_mesh.lookupObject<volScalarField>("thermo:mu");
     dimensionedScalar dimPS("dimPS",dimLength,m_poreSize);
@@ -385,16 +402,16 @@ void pyroSolid::updateHTC()
 
     const volScalarField Re = mag(U) * rho * dimPS / mu;
     const scalar Pr = 0.7;
-    //volScalarField Nu = sqrt( mag(Kp) / mu ) / dimPS;   
-    
+    //volScalarField Nu = sqrt( mag(Kp) / mu ) / dimPS;
+
     // Withaker correlation
     const volScalarField Nu = (1. - m_porosity) * ( 2. + 1.1 * pow(Re, 0.6) * pow(Pr,1.0/3.0));
-    
+
 
     forAll(m_htc, cellI)
     {
         scalar kappa(0.);
-        
+
         forAll(m_kappa, specieI)
         {
             kappa += m_kappa[specieI]*m_species[specieI][cellI];
@@ -408,22 +425,22 @@ void pyroSolid::updateHTC()
 
 }
 
-// const volTensorField& pyroSolid::Kp() 
+// const volTensorField& pyroSolid::Kp()
 // {
 //     return m_Kp;
 // }
 
-const volScalarField& pyroSolid::HTC() 
+const volScalarField& pyroSolid::HTC()
 {
     return m_htc;
 }
 
-const volScalarField& pyroSolid::T() 
+const volScalarField& pyroSolid::T()
 {
     return m_T;
 }
 
-void pyroSolid::solveEnergy() 
+void pyroSolid::solveEnergy()
 {
     //- Compute effective conductivity
     dimensionedScalar kappaDim("kappaDim",dimPower/dimLength/dimTemperature, 1.);
@@ -445,7 +462,7 @@ void pyroSolid::solveEnergy()
         forAll(m_kappa, specieI)
         {
             rhocp += m_species[specieI][cellI]*m_rho[specieI]*m_cp[specieI];
-    
+
         }
 
         m_rhoCp[cellI] = rhocp;
@@ -502,7 +519,7 @@ volScalarField pyroSolid::mdot()
         ),
         m_mesh,
         dimensionedScalar("mdot",dimDensity/dimTime,0.)
-    );            
+    );
 
     forAll(m_reactionRates, rateI)
     {

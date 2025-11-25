@@ -18,6 +18,7 @@ private:
   volScalarField m_rhoField;
   volScalarField m_T;
   volScalarField m_rhoCp;
+  volScalarField m_Qdot; //Heat of reaction
  // volTensorField m_Kp;
   volScalarField m_htc;
   volScalarField m_kappa_tot;
