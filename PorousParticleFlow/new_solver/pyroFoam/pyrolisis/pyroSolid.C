@@ -317,7 +317,7 @@ void pyroSolid::evolve()
             mass_species += m_species[specieI][cellI] * m_rho[specieI];
         }
 
-        m_porosity[cellI] = 1.0 - vol_species;
+        m_porosity[cellI] = 1.0 - (1.0 - m_porosity[cellI])*mass_species/m_rhoField[cellI];
         m_rhoField[cellI] = mass_species;
     }
 
