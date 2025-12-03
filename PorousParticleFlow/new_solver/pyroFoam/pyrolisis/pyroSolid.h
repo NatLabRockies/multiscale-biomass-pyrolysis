@@ -26,6 +26,7 @@ private:
   scalar m_poreSize;
   List<word> m_speciesName;
   PtrList<volScalarField> m_species;
+  PtrList<volScalarField> m_wi; // Mass fractions
   PtrList<volScalarField> m_reactionRates;
   scalarField m_rho;
   scalarField m_cp;

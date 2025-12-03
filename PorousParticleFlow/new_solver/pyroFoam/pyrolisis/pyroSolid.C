@@ -123,6 +123,7 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
     m_poreSize(readScalar(m_dict.lookup("poreSize"))),
     m_speciesName(m_dict.lookup("species")),
     m_species(m_speciesName.size()),
+    m_wi(m_speciesName.size()),
     m_rho(m_speciesName.size()),
     m_cp(m_speciesName.size()),
     m_molWeight(m_speciesName.size()),
@@ -138,7 +139,7 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
     {
 
         dictionary& speciesDict(m_dict.subDict("speciesCoeffs").subDict(m_speciesName[specieI]));
-        m_species.set (
+        m_wi.set (
             specieI,
             new volScalarField
             (
@@ -149,6 +150,23 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
                     m_mesh,
                     IOobject::READ_IF_PRESENT,
                     IOobject::AUTO_WRITE
+                ),
+                m_mesh,
+                dimensionedScalar("Y",dimless,0.)
+            )
+        );
+
+        m_species.set (
+            specieI,
+            new volScalarField
+            (
+                IOobject
+                (
+                    m_speciesName[specieI] + "_vol.solid",
+                    m_mesh.time().timeName(),
+                    m_mesh,
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE
                 ),
                 m_mesh,
                 dimensionedScalar("Y",dimless,0.)
@@ -223,6 +241,21 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
             )
         );
     }
+
+    // Initialize density
+    forAll(m_wi,specieI)
+    {
+        m_rhoField += m_wi[specieI] * m_rho[specieI];
+    }
+
+    m_rhoField *= (1.0 - m_porosity); // The density is per unit volume, not phase volume
+
+    // Initialize volume fractions
+    forAll(m_wi,specieI)
+    {
+        m_species[specieI] = m_wi[specieI] * ( m_rhoField  / dimensionedScalar("rho", dimDensity, m_rho[specieI]) );
+    }
+    
 }
 
 pyroSolid::~pyroSolid()
@@ -323,6 +356,12 @@ void pyroSolid::evolve()
 
     m_porosity.correctBoundaryConditions();
     m_rhoField.correctBoundaryConditions();
+
+    // Update mass fractions
+    forAll(m_species, specieI)
+    {
+        m_wi[specieI] = m_species[specieI] * dimensionedScalar("rho", dimDensity, m_rho[specieI]) / ( m_rhoField * (1.0 - m_porosity) );
+    }    
 
 }
 
