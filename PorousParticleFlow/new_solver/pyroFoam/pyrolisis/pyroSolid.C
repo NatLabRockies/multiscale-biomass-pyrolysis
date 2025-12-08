@@ -245,7 +245,7 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
     // Initialize density
     forAll(m_wi,specieI)
     {
-        m_rhoField += m_wi[specieI] * m_rho[specieI];
+        m_rhoField += m_wi[specieI] * dimensionedScalar("rho",dimDensity,m_rho[specieI]);
     }
 
     m_rhoField *= (1.0 - m_porosity); // The density is per unit volume, not phase volume
