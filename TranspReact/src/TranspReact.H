@@ -171,8 +171,8 @@ public:
 
     int under_relax[NUM_SPECIES]={0};
     amrex::Real relaxfac[NUM_SPECIES]={0.0};
-    int under_relax_maxiter[NUM_SPECIES]={1};
-    amrex::Real under_relax_tol[NUM_SPECIES]={1e-5};
+    int under_relax_maxiter[NUM_SPECIES]={0};
+    amrex::Real under_relax_tol[NUM_SPECIES]={0.0};
 
     int conjugate_solve[NUM_SPECIES]={0};
 

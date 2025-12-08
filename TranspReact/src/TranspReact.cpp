@@ -306,6 +306,15 @@ void TranspReact::ReadParameters()
            enable_under_relaxation=1;
         }
 
+        //set default values
+        for(int sp=0;sp<NUM_SPECIES;sp++)
+        {
+          under_relax[sp]=0;
+          relaxfac[sp]=0.0;
+          under_relax_maxiter[sp]=1;
+          under_relax_tol[sp]=1e-5;
+        }
+
         if(enable_under_relaxation)
         {
             if(under_relax_fac_list.size()!=under_relax_specid_list.size() ||

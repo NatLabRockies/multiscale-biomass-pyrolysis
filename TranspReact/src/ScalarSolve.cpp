@@ -31,11 +31,20 @@ Implicit (with sundials):
    integration.sundials.type = ERK
  */
 void TranspReact::chemistry_advance(int lev, Real time, Real dt_lev,
-       MultiFab &adsrc_lev, 
-                                             MultiFab &phi_old_lev, MultiFab &phi_new_lev)
+                                    MultiFab &adsrc_lev, 
+                                    MultiFab &phi_old_lev, MultiFab &phi_new_lev)
 {
     MultiFab& S_new = phi_new_lev; // old value
     MultiFab& S_old = phi_old_lev; // current value
+
+    int unsolved_species[NUM_SPECIES]={0};
+    int steady_species[NUM_SPECIES]={0};
+
+    for(unsigned int ind=0;ind<NUM_SPECIES;ind++)
+    {
+        unsolved_species[ind]=unsolvedspec[ind];
+        steady_species[ind]=steadyspec[ind];
+    }
 
     auto rhs_function = [&] ( Vector<MultiFab> & dSdt_vec, 
                              const Vector<MultiFab>& S_vec, const Real time) {
@@ -43,14 +52,20 @@ void TranspReact::chemistry_advance(int lev, Real time, Real dt_lev,
         MultiFab S(S_vec[0], amrex::make_alias, 0, S_vec[0].nComp());
         update_rxnsrc_at_level(lev, S, dSdt, time);
         amrex::MultiFab::Saxpy(dSdt, 1.0, adsrc_lev, 0, 0, NUM_SPECIES, 0);
-                
+        for(unsigned int ind=0;ind<NUM_SPECIES;ind++)
+        {
+            if(unsolved_species[ind] || steady_species[ind])
+            {
+                dSdt.mult(0.0,ind,1);
+            }
+        }
     };
-    
+
     auto rhs_null_function = [&] ( Vector<MultiFab> & dSdt_vec, 
-                             const Vector<MultiFab>& S_vec, const Real time) {
+                                  const Vector<MultiFab>& S_vec, const Real time) {
         auto & dSdt = dSdt_vec[0];
         dSdt.setVal(0.0);
-                
+
     };
     Vector<MultiFab> state_old, state_new;
 
@@ -64,24 +79,24 @@ void TranspReact::chemistry_advance(int lev, Real time, Real dt_lev,
     {
         if(integration_sd_type=="ERK" || integration_sd_type=="DIRK")
         {
-                integrator.set_rhs(rhs_function);
+            integrator.set_rhs(rhs_function);
         }
         else if(integration_sd_type=="IMEX-RK")
         {
-           //only implicit
-           integrator.set_imex_rhs(rhs_function,rhs_null_function);
+            //only implicit
+            integrator.set_imex_rhs(rhs_function,rhs_null_function);
         }
         else if(integration_sd_type=="EX-MRI" || 
                 integration_sd_type=="IM-MRI" ||
                 integration_sd_type=="IMEX-MRI")
         {
-           //always assume reaction is the fast rhs
-           integrator.set_rhs(rhs_null_function);
-           integrator.set_fast_rhs(rhs_function);
+            //always assume reaction is the fast rhs
+            integrator.set_rhs(rhs_null_function);
+            integrator.set_fast_rhs(rhs_function);
         }
         else
         {
-          amrex::Abort("Wrong sundials integration type in transpreact\n");
+            amrex::Abort("Wrong sundials integration type in transpreact\n");
         }
     }
     else //RK
