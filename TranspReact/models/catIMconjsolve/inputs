@@ -1,0 +1,95 @@
+max_step  = 10000
+stop_time = 1e-1
+
+# PROBLEM SIZE & GEOMETRY
+geometry.is_periodic =  0  0  0
+geometry.coord_sys   =  0       # 0 => cart
+geometry.prob_lo     =  0.0    0.0   0.0
+geometry.prob_hi     =  1.2e-6  0.6e-6  0.6e-6
+amr.n_cell           =  128 64 64
+
+# VERBOSITY
+amr.v              = 1       # verbosity in Amr
+
+# REFINEMENT
+amr.max_level       = 0      # maximum level number allowed
+amr.blocking_factor = 2       # block factor in grid generation
+amr.max_grid_size   = 4096
+
+amr.regrid_int      = 1       # how often to regrid
+
+# TIME STEP CONTROL
+tr.dt             = 1e-10
+
+# Tagging
+tr.tagged_vars = Ionomer 
+tr.Ionomer_refine = 1e20
+tr.Ionomer_refinegrad = 0.01
+
+#0 - periodic
+#1 - Dirichlet
+#2 - Homogenous Neumann
+#3 - Inhomogenous Neumann
+#4 - Robin
+
+tr.default_bc_lo = 2 2 2
+tr.default_bc_hi = 2 2 2
+
+tr.Potential_bc_lo = 1 2 2
+tr.Potential_bc_hi = 1 2 2
+
+tr.CO2_bc_lo = 2 2 2
+tr.CO2_bc_hi = 1 2 2
+
+tr.CO_bc_lo = 2 2 2
+tr.CO_bc_hi = 2 2 2
+
+tr.OHm_bc_lo = 2 2 2
+tr.OHm_bc_hi = 1 2 2
+
+tr.Kp_bc_lo = 2 2 2
+tr.Kp_bc_hi = 1 2 2
+
+# PLOTFILES
+amr.plot_file  = plt    # root name of plot file
+amr.plot_int   = 1000     # number of timesteps between plot files
+
+# CHECKPOINT
+amr.chk_file = chk      # root name of checkpoint file
+amr.chk_int  = -1       # number of timesteps between checkpoint files
+
+tr.using_ib=0
+tr.split_chemistry=0
+#integration.type="SUNDIALS"
+#integration.sundials.type="IM-MRI"
+#integration.sundials.method="ARKODE_ARK2_DIRK_3_1_2"
+#integration.sundials.method="ARKODE_BACKWARD_EULER_1_1"
+#integration.sundials.method="ARKODE_IMPLICIT_MIDPOINT_1_2"
+integration.type="RungeKutta"
+integration.rk.type=2
+
+tr.linsolve_use_prvs_soln=0
+tr.unsolved_species_ids=6 8 9 11 12 13 14 15 16 17
+#tr.unsolved_species_ids=  0 1 2 3 4 5 6 7 8 9 11 12 13 14 15 16 17
+tr.steady_species_ids=10
+tr.transform_vars=1
+prob.koh_init=1000.0
+prob.tmap_conc=1000.0
+prob.co2_boundary=0.012
+prob.sourcefac=1.0
+prob.catelecpot=-1.0
+#prob.current_input=3.0
+prob.current_input=30.0
+prob.imfrac=0.3
+
+tr.using_ib=1
+tr.conjugate_solve_species_ids=10
+tr.conjsolve_maxiter=1
+tr.linsolve_maxiter=200
+tr.linsolve_use_prvs_soln=1
+tr.interface_update_maxiter=3
+
+tr.under_relax_species_ids=10
+tr.under_relax_fac=1e12
+tr.under_relax_maxiter=4
+tr.under_relax_tol=1e-18

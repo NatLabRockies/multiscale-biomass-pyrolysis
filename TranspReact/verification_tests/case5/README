@@ -1,0 +1,14 @@
+#Solving this system
+d/dx(-D dT/dx)=0
+T(0)=1 T(1)=0
+D=0.1 for x in [0,0.2)
+D=1.0 for x in [0.2,0.6)
+D=0.2 for x in [0.6,1.0]
+
+In this case, a cell mask is 
+applied in in [0,0.2) and 
+IB method is used.
+
+Temperature is then solved 
+inside the solid (cell mask=0) using
+iterative conjugate solves.

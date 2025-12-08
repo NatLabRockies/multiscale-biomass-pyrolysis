@@ -112,6 +112,7 @@ void initdomaindata(Box const& bx, Array4<Real> const& phi,
                 {
                     phi(i,j,k,c)=0.0;
                 }
+                phi(i,j,k,CMASK_ID)=1.0;
                 for(int kk=0;kk<2;kk++)
                 {
                     for(int jj=0;jj<2;jj++)

@@ -11,6 +11,25 @@ using namespace amrex;
 namespace tr_boundaries
 {
     AMREX_GPU_DEVICE AMREX_INLINE
+    void bc_ib(IntVect face,
+               int dir, int sgn,
+               int solved_comp,
+               Array4<Real> const& sb_arr,
+               Array4<Real> const& acoeff,
+               Array4<Real> const& rhs,
+               GpuArray<int, AMREX_SPACEDIM> domlo,
+               GpuArray<int, AMREX_SPACEDIM> domhi,
+               GpuArray<Real, AMREX_SPACEDIM> prob_lo,
+               GpuArray<Real, AMREX_SPACEDIM> prob_hi,
+               GpuArray<Real, AMREX_SPACEDIM> dx,
+               const Real time,
+               ProbParm const& prob_parm)
+    {
+
+    
+    }
+    
+    AMREX_GPU_DEVICE AMREX_INLINE
     void species_bc(int i,int j,int k, int dir, int sgn, 
                     int spec_id, Array4<Real> const &phi, 
                     Array4<Real> const& bc_arr,

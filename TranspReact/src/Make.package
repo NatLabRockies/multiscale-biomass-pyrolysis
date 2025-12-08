@@ -1,2 +1,2 @@
 CEXE_sources += TranspReact.cpp Evolve.cpp GridWork.cpp Plot.cpp ScalarSolve.cpp TimeStep.cpp main.cpp
-CEXE_headers += BCFill.H TranspReact.H Tagging.H UnivConstants.H VarDefines.H compute_adv_flux.H
+CEXE_headers += BCFill.H TranspReact.H Tagging.H UnivConstants.H VarDefines.H compute_adv_flux.H Utils.H

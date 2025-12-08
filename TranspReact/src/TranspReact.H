@@ -85,11 +85,16 @@ public:
    void compute_scalar_advection_flux(int specid, int lev, MultiFab& Sborder, 
                                              Array<MultiFab,AMREX_SPACEDIM>& flux, 
                                              Vector<int>& bc_lo, Vector<int>& bc_hi,
-                                             Real time);
+                                             Real time,int conjsolve);
+
+   void compute_divsources(int specid,int lev, MultiFab& Sborder, 
+                                     Array<MultiFab,AMREX_SPACEDIM>& flux, 
+                                     Vector<int>& bc_lo, Vector<int>& bc_hi,
+                                     Real current_time,int conjsolve);
   
    void update_advsrc_at_all_levels(int specid,Vector<MultiFab>& Sborder,
                                               Vector<MultiFab>& adv_src, 
-                                              amrex::Real cur_time);
+                                              amrex::Real cur_time,int conjsolve);
 
     void update_rxnsrc_at_all_levels(Vector<MultiFab>& Sborder,
                                             Vector<MultiFab>& rxn_src, 
@@ -98,9 +103,29 @@ public:
     void implicit_solve_scalar(Real current_time, Real dt, int spec_id,
             Vector<MultiFab>& Sborder, Vector<MultiFab>& Sborder_old,
                                   Vector<MultiFab>& rxn_src, 
-                                  Vector<MultiFab>& adv_src); 
+                                  Vector<MultiFab>& adv_src,int conjsolve); 
     
     void transform_variables(Vector<MultiFab>& Sborder,amrex::Real cur_time);
+
+    //IB functions***************************************************
+    void null_bcoeff_at_ib(int ilev, Array<MultiFab, 
+            AMREX_SPACEDIM>& face_bcoeff, 
+            MultiFab& Sborder,int conjsolve);
+
+    void set_explicit_fluxes_at_ib(int ilev, MultiFab& rhs,
+                                            MultiFab& acoeff,
+                                            MultiFab& Sborder,
+                                            Real time,
+                                            int compid,int conjsolve);
+
+    void null_field_in_covered_cells(Vector<MultiFab>& fld,
+                                              Vector<MultiFab>& Sborder,
+                                              int startcomp,int numcomp);
+    //*****************************************************************
+
+    void set_solver_mask(Vector<iMultiFab>& solvermask,
+                         Vector<MultiFab>& neg_solvermask,
+                                  Vector<MultiFab>& Sborder,int conjsolve);
 
     // compute dt from CFL considerations
     void find_transp_timescales(int lev,amrex::Real cur_time,
@@ -116,9 +141,9 @@ public:
 
     static ProbParm* h_prob_parm;
     static ProbParm* d_prob_parm;
-   
+
     std::unique_ptr<amrex::MLABecLaplacian> linsolve_ptr;
-    
+
     ////////////////
     amrex::Gpu::ManagedVector<Real> refine_phi;
     amrex::Gpu::ManagedVector<Real> refine_phigrad;
@@ -131,17 +156,25 @@ public:
     amrex::Vector<amrex::Real> t_new;
     amrex::Vector<amrex::Real> t_old;
     amrex::Vector<amrex::Real> dt;
-    
+
     int hyp_order=1;
     int do_reactions=1;
     int do_transport=1;
     int do_advection=1;
     int transform_vars=0;
     int adaptive_dt=0;
+    int using_ib=0;
     int split_chemistry=0;
     amrex::Real fixed_dt=1e-12;
     amrex::Real advective_cfl=0.5;
     amrex::Real diffusive_cfl=0.5;
+
+    int under_relax[NUM_SPECIES]={0};
+    amrex::Real relaxfac[NUM_SPECIES]={0.0};
+    int under_relax_maxiter[NUM_SPECIES]={0};
+    amrex::Real under_relax_tol[NUM_SPECIES]={0.0};
+
+    int conjugate_solve[NUM_SPECIES]={0};
 
     amrex::Real dt_max=1e50;
     amrex::Real dt_min=1e-50;
@@ -171,7 +204,7 @@ public:
 
     amrex::Vector<int> pot_bc_lo{ROBINBC, ROBINBC, ROBINBC};
     amrex::Vector<int> pot_bc_hi{ROBINBC, ROBINBC, ROBINBC};
-    
+
     amrex::Real linsolve_reltol = 1e-10;
     amrex::Real linsolve_abstol = 1e-10;
     amrex::Real linsolve_bot_reltol = 1e-10;
@@ -187,6 +220,11 @@ public:
     int linsolve_max_coarsening_level=10;
     int bound_specden=0;
     int ngrow_for_fillpatch=2;
+    int conjsolve_maxiter=1;
+    int interface_update_maxiter=0;
+
+    int linsolve_use_prvs_soln=1;
+
 
     // how often each level regrids the higher levels of refinement
     // (after a level advances that many time steps)

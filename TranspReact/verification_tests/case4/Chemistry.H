@@ -45,5 +45,25 @@ namespace tr_reactions
     {
 
     }
+    
+    AMREX_GPU_DEVICE AMREX_INLINE
+    void compute_div_sources(IntVect faceid, int dir,
+                             int spec_id,
+                             Array4<Real> const& sb_arr,
+                             Array4<Real> const& flx_arr,
+                             const GpuArray<int, AMREX_SPACEDIM> bclo,
+                             const GpuArray<int, AMREX_SPACEDIM> bchi,
+                             const GpuArray<int, AMREX_SPACEDIM> domlo,
+                             const GpuArray<int, AMREX_SPACEDIM> domhi,
+                             const Real time,
+                             const Real dt,
+                             GpuArray<Real, AMREX_SPACEDIM> dx,
+                             ProbParm const& prob_parm,
+                             int using_ib,
+                             int conjsolve)
+
+    {
+
+    }
 }
 #endif

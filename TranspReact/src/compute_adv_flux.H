@@ -121,7 +121,7 @@ void compute_flux(
     amrex::Real time,
     const GpuArray<Real, AMREX_SPACEDIM>& dx,
     amrex::Real dt,
-    ProbParm const& prob_parm,int hyp_order)
+    ProbParm const& prob_parm,int hyp_order,int using_ib,int conjsolve)
 {
 
     //|--left1--|--left--|--right--|--right1--|
@@ -133,61 +133,85 @@ void compute_flux(
     IntVect right{AMREX_D_DECL(i, j, k)};
     left[sweepdir] -= 1;
 
-    Real phi_L = phi(left, specid);
-    Real phi_R = phi(right, specid);
-    Real vel_L;
-    Real vel_R;
+    int mask_L=1;
+    int mask_R=1;
 
-    vel_L = tr_transport::compute_vel(left,sweepdir,specid,phi,dx,time,prob_parm);
-    vel_R = tr_transport::compute_vel(right,sweepdir,specid,phi,dx,time,prob_parm);
-
-    if(hyp_order==1)
+    if(!conjsolve)
     {
-        fx(face)=get_firstorder_upwind_flux(vel_L,vel_R,phi_L,phi_R);
+      mask_L=(using_ib==1)?int(phi(left,CMASK_ID)):1;
+      mask_R=(using_ib==1)?int(phi(right,CMASK_ID)):1;
     }
     else
     {
-        IntVect left1{AMREX_D_DECL(i, j, k)};
-        IntVect right1{AMREX_D_DECL(i, j, k)};
-        IntVect left2{AMREX_D_DECL(i, j, k)};
-        IntVect right2{AMREX_D_DECL(i, j, k)};
-        left1[sweepdir] -= 2;
-        right1[sweepdir] += 1;
-        left2[sweepdir] -= 3;
-        right2[sweepdir] += 2;
+      //use the not of cmask here
+      mask_L=(using_ib==1)?int(1.0-phi(left,CMASK_ID)):1;
+      mask_R=(using_ib==1)?int(1.0-phi(right,CMASK_ID)):1;
+    }
 
-        amrex::Real vel_Lm1, vel_Lm2, vel_Rp1, vel_Rp2;
+    int valid_left_and_right_cells=mask_L*mask_R;
 
-        vel_Lm1 = tr_transport::compute_vel(left1,sweepdir,specid,phi,dx,time,prob_parm);
-        vel_Lm2 = tr_transport::compute_vel(left2,sweepdir,specid,phi,dx,time,prob_parm);
-        vel_Rp1 = tr_transport::compute_vel(right1,sweepdir,specid,phi,dx,time,prob_parm);
-        vel_Rp2 = tr_transport::compute_vel(right2,sweepdir,specid,phi,dx,time,prob_parm);
+    if(valid_left_and_right_cells)
+    {
+        Real phi_L = phi(left, specid);
+        Real phi_R = phi(right, specid);
 
-        amrex::Real ulm2=phi(left2,specid);
-        amrex::Real ulm1=phi(left1,specid);
-        amrex::Real ul=phi(left,specid);
-        amrex::Real ur=phi(right,specid);
-        amrex::Real urp1=phi(right1,specid);
-        amrex::Real urp2=phi(right2,specid);
+        Real vel_L = tr_transport::compute_vel(left,sweepdir,specid,phi,dx,time,prob_parm);
+        Real vel_R = tr_transport::compute_vel(right,sweepdir,specid,phi,dx,time,prob_parm);
 
-        amrex::Real flm2=ulm2*vel_Lm2;
-        amrex::Real flm1=ulm1*vel_Lm1;
-        amrex::Real fl=ul*vel_L;
-        amrex::Real fr=ur*vel_R;
-        amrex::Real frp1=urp1*vel_Rp1;
-        amrex::Real frp2=urp2*vel_Rp2;
+        if(hyp_order==1)
+        {
+            fx(face)=get_firstorder_upwind_flux(vel_L,vel_R,phi_L,phi_R);
+        }
+        else
+        {
+            IntVect left1{AMREX_D_DECL(i, j, k)};
+            IntVect right1{AMREX_D_DECL(i, j, k)};
+            IntVect left2{AMREX_D_DECL(i, j, k)};
+            IntVect right2{AMREX_D_DECL(i, j, k)};
+            left1[sweepdir] -= 2;
+            right1[sweepdir] += 1;
+            left2[sweepdir] -= 3;
+            right2[sweepdir] += 2;
 
-        amrex::Real fmhalf=0.0;
-        amrex::Real fphalf=0.0;
-        amrex::Real umhalf=0.0;
-        amrex::Real uphalf=0.0;
-        amrex::Real lambda_max=amrex::Math::abs(0.5*(vel_L+vel_R));
+            int mask_L1=(using_ib==1)?int(phi(left1,CMASK_ID)):1;
+            int mask_L2=(using_ib==1)?int(phi(left2,CMASK_ID)):1;
 
-        weno_reconstruct(flm2,flm1,fl,fr,frp1,frp2,fmhalf,fphalf);
-        weno_reconstruct(ulm2,ulm1,ul,ur,urp1,urp2,umhalf,uphalf);
+            int mask_R1=(using_ib==1)?int(phi(right1,CMASK_ID)):1;
+            int mask_R2=(using_ib==1)?int(phi(right2,CMASK_ID)):1;
 
-        fx(face)=0.5*(fphalf+lambda_max*uphalf) +
-        0.5*(fmhalf-lambda_max*umhalf);
+            amrex::Real vel_Lm1, vel_Lm2, vel_Rp1, vel_Rp2;
+
+            vel_Lm1 = (mask_L1==1)?tr_transport::compute_vel(left1,sweepdir,specid,phi,dx,time,prob_parm):vel_L;
+            vel_Lm2 = (mask_L2==1)?tr_transport::compute_vel(left2,sweepdir,specid,phi,dx,time,prob_parm):vel_L;
+            vel_Rp1 = (mask_R1==1)?tr_transport::compute_vel(right1,sweepdir,specid,phi,dx,time,prob_parm):vel_R;
+            vel_Rp2 = (mask_R2==1)?tr_transport::compute_vel(right2,sweepdir,specid,phi,dx,time,prob_parm):vel_R;
+
+            amrex::Real ulm2=(mask_L2==1)?phi(left2,specid):phi(left,specid);
+            amrex::Real ulm1=(mask_L1==1)?phi(left1,specid):phi(left,specid);
+            amrex::Real ul=phi(left,specid);
+            amrex::Real ur=phi(right,specid);
+            amrex::Real urp1=(mask_R1==1)?phi(right1,specid):phi(right,specid);
+            amrex::Real urp2=(mask_R2==1)?phi(right2,specid):phi(right,specid);
+
+            amrex::Real flm2=ulm2*vel_Lm2;
+            amrex::Real flm1=ulm1*vel_Lm1;
+            amrex::Real fl=ul*vel_L;
+            amrex::Real fr=ur*vel_R;
+            amrex::Real frp1=urp1*vel_Rp1;
+            amrex::Real frp2=urp2*vel_Rp2;
+
+            amrex::Real fmhalf=0.0;
+            amrex::Real fphalf=0.0;
+            amrex::Real umhalf=0.0;
+            amrex::Real uphalf=0.0;
+            amrex::Real lambda_max=amrex::Math::abs(0.5*(vel_L+vel_R));
+
+            weno_reconstruct(flm2,flm1,fl,fr,frp1,frp2,fmhalf,fphalf);
+            weno_reconstruct(ulm2,ulm1,ul,ur,urp1,urp2,umhalf,uphalf);
+
+            fx(face)=0.5*(fphalf+lambda_max*uphalf) +
+            0.5*(fmhalf-lambda_max*umhalf);
+        }
     }
 
     if(face[sweepdir]==domlo[sweepdir])

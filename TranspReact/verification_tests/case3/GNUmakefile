@@ -15,7 +15,7 @@ COMP	   = gnu
 USE_MPI    = TRUE
 USE_OMP    = FALSE 
 USE_CUDA   = FALSE
-USE_SUNDIALS = FALSE
+USE_SUNDIALS = TRUE
 
 Bpack   := ./Make.package 
 Blocs   := . 

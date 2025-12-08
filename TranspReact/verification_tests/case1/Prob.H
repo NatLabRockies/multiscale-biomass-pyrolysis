@@ -57,6 +57,7 @@ void initdomaindata(Box const& bx, Array4<Real> const& phi,
                 Real x = prob_lo[0] + (0.5+i) * dx[0];
                 phi(i,j,k,S1_ID)  = 0.0;
                 phi(i,j,k,S2_ID)  = 0.0;
+                phi(i,j,k,CMASK_ID)=1.0;
             }
         }
     }

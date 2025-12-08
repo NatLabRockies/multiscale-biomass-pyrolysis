@@ -5,8 +5,8 @@ stop_time = 1e-5
 geometry.is_periodic =  0  0  0
 geometry.coord_sys   =  0       # 0 => cart
 geometry.prob_lo     =  0.0    0.0   0.0
-geometry.prob_hi     =  12e-7  6e-7  6e-7
-amr.n_cell           =  128 64 64
+geometry.prob_hi     =  12e-7  0.09375e-7  0.75e-7
+amr.n_cell           =  512 4 4
 
 # VERBOSITY
 amr.v              = 1       # verbosity in Amr

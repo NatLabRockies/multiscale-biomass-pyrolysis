@@ -1,0 +1,22 @@
+#Solving electrode-electrolyte system
+d/dx(-sigma dphi/dx)=0
+phi(0)=1 phi(1)=0
+sigma=3.0 for x in [0,0.2) (electrode)
+sigma=1.0 for x in [0.2,1] (electrolyte)
+At the interface a BV condition is applied
+-sigma dphidx (left) = j0*sinh((phi_electrode-phi_electrolyte-ocp)/phi0)
+= -sigma dphidx (right)
+
+In this case, a cell mask is 
+applied in in [0,0.2) and 
+IB method is used.
+
+Potential is then solved 
+inside the solid (cell mask=0) using
+iterative conjugate solves.
+
+There is a right case as well which is the mirror image 
+of the left case.
+
+Note that the BV current is always directed from 
+electrode to electrolyte

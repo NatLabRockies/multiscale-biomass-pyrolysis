@@ -2,7 +2,8 @@
 #define TranspReact_vardefines_H_
 #include <Species.H>
 
-#define NVAR NUM_SPECIES
+#define CMASK_ID (NUM_SPECIES)
+#define NVAR (NUM_SPECIES+1)
 
 #define PERBC 0
 #define DIRCBC 1

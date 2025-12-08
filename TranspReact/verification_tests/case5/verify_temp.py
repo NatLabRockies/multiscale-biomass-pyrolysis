@@ -7,8 +7,8 @@ import numpy as np
     
 
 clength   = 1.0
-cwidth    = 0.125
-cdepth    = 0.125
+cwidth    = 0.0625
+cdepth    = 0.0625
 ar     = (clength/cwidth)
 
 
@@ -25,7 +25,7 @@ x1=0.2
 x2=0.6
 k1=0.1
 k2=1.0
-k3=0.5
+k3=0.2
 
 R1=x1/k1
 R2=(x2-x1)/k2
@@ -61,8 +61,8 @@ ax.plot(x,fld_temp,'k*',label="TR",markersize=2)
 ax.legend(loc="best")
 
 dir_char=axialdir_char
-fig.suptitle("S1 and S2 solution along "+dir_char+" direction ")
-plt.savefig("species_"+dir_char+".png")
+fig.suptitle("T solution along "+dir_char+" direction ")
+plt.savefig("temperature_"+dir_char+".png")
 plt.show()
 #=======================================
 

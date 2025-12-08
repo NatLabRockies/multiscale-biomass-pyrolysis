@@ -42,8 +42,8 @@ namespace tr_reactions
             amrex::Print()<<"Kp,OHm,TMAp:"<<phi(i,j,k,Kp_ID)<<"\t"<<phi(i,j,k,OHm_ID)<<"\t"<<phi(i,j,k,TMAp_ID)<<"\n";
         }*/
 
-        //specsource(i,j,k,PHI_ID)=Zici*FARADCONST/eps;
-        specsource(i,j,k,PHI_ID)=0.0;
+        specsource(i,j,k,PHI_ID)=Zici*FARADCONST/eps;
+        //specsource(i,j,k,PHI_ID)=0.0;
         //specsource(i,j,k,PHI_ID)=-Zici/eps;
         //
         //Reactions
@@ -182,6 +182,26 @@ namespace tr_reactions
                 //there shouldnt be another option!
             }
         }
+
+    }
+    
+    AMREX_GPU_DEVICE AMREX_INLINE
+    void compute_div_sources(IntVect faceid, int dir,
+                             int spec_id,
+                             Array4<Real> const& sb_arr,
+                             Array4<Real> const& flx_arr,
+                             const GpuArray<int, AMREX_SPACEDIM> bclo,
+                             const GpuArray<int, AMREX_SPACEDIM> bchi,
+                             const GpuArray<int, AMREX_SPACEDIM> domlo,
+                             const GpuArray<int, AMREX_SPACEDIM> domhi,
+                             const Real time,
+                             const Real dt,
+                             GpuArray<Real, AMREX_SPACEDIM> dx,
+                             ProbParm const& prob_parm,
+                             int using_ib,
+                             int conjsolve)
+
+    {
 
     }
 
