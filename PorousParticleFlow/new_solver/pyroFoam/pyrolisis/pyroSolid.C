@@ -360,7 +360,11 @@ void pyroSolid::evolve()
     // Update mass fractions
     forAll(m_species, specieI)
     {
-        m_wi[specieI] = m_species[specieI] * dimensionedScalar("rho", dimDensity, m_rho[specieI]) / ( m_rhoField * (1.0 - m_porosity) );
+        forAll(m_wi[specieI],cellI)
+        {
+            m_wi[specieI][cellI] = m_species[specieI][cellI] * m_rho[specieI] / ( 1e-12 + m_rhoField[cellI] * (1.0 - m_porosity[cellI]) );
+        } 
+        m_wi[specieI].correctBoundaryConditions();
     }    
 
 }
