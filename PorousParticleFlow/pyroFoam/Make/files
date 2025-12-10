@@ -1,0 +1,5 @@
+pyrolisis/irreversibleArrheniusReaction.C
+pyrolisis/pyroSolid.C
+pyroFoam.C
+
+EXE = $(FOAM_USER_APPBIN)/pyroFoam
