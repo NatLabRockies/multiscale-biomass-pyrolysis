@@ -45,19 +45,6 @@ surfaceScalarField phi
         IOobject::READ_IF_PRESENT,
         IOobject::AUTO_WRITE
     ),
-    linearInterpolate(rho*U) & mesh.Sf()
-);
-
-surfaceScalarField alphaPhi
-(
-    IOobject
-    (
-        "alphaPhi",
-        runTime.timeName(),
-        mesh,
-        IOobject::READ_IF_PRESENT,
-        IOobject::AUTO_WRITE
-    ),
     linearInterpolate(alpha*rho*U) & mesh.Sf()
 );
 

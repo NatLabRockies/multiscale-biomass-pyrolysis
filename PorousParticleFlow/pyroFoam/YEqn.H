@@ -4,8 +4,8 @@ tmp<fv::convectionScheme<scalar>> mvConvection
     (
         mesh,
         fields,
-        alphaPhi,
-        mesh.divScheme("div(alphaPhi,Yi_h)")
+        phi,
+        mesh.divScheme("div(phi,Yi_h)")
     )
 );
 
@@ -25,11 +25,11 @@ mdot *= 0.;
             fvScalarMatrix YiEqn
             (
                 fvm::ddt(alpha, rho, Yi)
-              + mvConvection->fvmDiv(alphaPhi, Yi)
+              + mvConvection->fvmDiv(phi, Yi)
               - fvm::laplacian(alpha * turbulence->muEff(), Yi)
              ==
                 alpha*reaction->R(Yi)
-              + fvOptions(alpha, rho, Yi)
+              + fvOptions(rho, Yi)
             );
 
 

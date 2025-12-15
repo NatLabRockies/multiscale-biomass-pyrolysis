@@ -32,19 +32,16 @@ Description
 \*---------------------------------------------------------------------------*/
 
 {
-    dimensionedScalar totalMass = fvc::domainIntegrate(rho);
+    dimensionedScalar totalMass = fvc::domainIntegrate(alpha*rho);
 
     scalar sumLocalContErr =
-        (fvc::domainIntegrate(mag(rho - thermo.rho()))/totalMass).value();
+        (fvc::domainIntegrate(mag(alpha*rho - alpha*thermo.rho()))/totalMass).value();
 
-    scalar globalContErr =
-        (fvc::domainIntegrate(rho - thermo.rho())/totalMass).value();
-
-    cumulativeContErr += globalContErr;
+    globalContErr =
+        (fvc::domainIntegrate(alpha*rho - alpha*thermo.rho())/totalMass).value();
 
     Info<< "time step continuity errors : sum local = " << sumLocalContErr
         << ", global = " << globalContErr
-        << ", cumulative = " << cumulativeContErr
         << endl;
 }
 

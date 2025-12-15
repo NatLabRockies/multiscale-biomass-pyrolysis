@@ -25,12 +25,20 @@ MRF.makeRelative(fvc::interpolate(rho), phiHbyA);
 // Update the pressure BCs to ensure flux consistency
 constrainPressure(p_rgh, rho, U, phiHbyA, rhorAUf, MRF);
 
+fvScalarMatrix p_rghDDtEqn
+(
+    fvc::ddt(alpha,rho) + psi*correction(fvm::ddt(p_rgh))
+  + fvc::div(phiHbyA)
+  ==
+    fvOptions(psi, p_rgh, rho.name())
+);
+
 while (pimple.correctNonOrthogonal())
 {
     fvScalarMatrix p_rghEqn
     (
-         fvc::ddt(alpha, rho) + fvc::div(phiHbyA) - mdot
-       - fvm::laplacian(rhorAUf, p_rgh)
+        p_rghDDtEqn
+      - fvm::laplacian(rhorAUf, p_rgh)
     );
 
     p_rghEqn.solve(p_rgh.select(pimple.finalInnerIter()));
@@ -38,8 +46,7 @@ while (pimple.correctNonOrthogonal())
     if (pimple.finalNonOrthogonalIter())
     {
         // Calculate the conservative fluxes
-        alphaPhi = phiHbyA + p_rghEqn.flux();
-        phi = alphaPhi/alphaf;
+        phi = phiHbyA + p_rghEqn.flux();
 
         // Explicitly relax pressure for momentum corrector
         p_rgh.relax();

@@ -3,13 +3,13 @@
 
     fvScalarMatrix EEqn
     (
-        fvm::ddt(alpha, rho, he) + mvConvection->fvmDiv(alphaPhi, he)
-      + fvc::ddt(alpha, rho, K) + fvc::div(alphaPhi, K)
+        fvm::ddt(alpha, rho, he) + mvConvection->fvmDiv(phi, he)
+      + fvc::ddt(alpha, rho, K) + fvc::div(phi, K)
       + (
             he.name() == "e"
           ? fvc::div
             (
-                fvc::absolute(alphaPhi/fvc::interpolate(rho), U),
+                fvc::absolute(phi/fvc::interpolate(alpha*rho), U),
                 p,
                 "div(phiv,p)"
             )

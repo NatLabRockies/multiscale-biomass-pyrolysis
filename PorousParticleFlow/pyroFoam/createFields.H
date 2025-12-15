@@ -8,7 +8,7 @@ thermo.validate(args.executable(), "h", "e");
 basicSpecieMixture& composition = thermo.composition();
 PtrList<volScalarField>& Y = composition.Y();
 
-/* Initialize pyrolisis */
+Info << "Initialize pyrolysis\n";
 pyrolisis::pyroSolid ps(mesh);
 
 const volScalarField& alpha = ps.porosity();
@@ -73,7 +73,7 @@ autoPtr<CombustionModel<rhoReactionThermo>> reaction
 (
     CombustionModel<rhoReactionThermo>::New(thermo, turbulence())
 );
-
+Info<< "Reading g\n" << endl;
 #include "readGravitationalAcceleration.H"
 #include "readhRef.H"
 #include "gh.H"
@@ -136,7 +136,7 @@ volScalarField RRQdot
         IOobject::AUTO_WRITE
     ),
     mesh,
-    dimensionedScalar("RRQdot",dimEnergy/dimTime/dimVolume,0.)   
+    dimensionedScalar("RRQdot",dimEnergy/dimTime/dimVolume,0.)
 );
 
 volScalarField mdot
@@ -150,7 +150,7 @@ volScalarField mdot
         IOobject::AUTO_WRITE
     ),
     mesh,
-    dimensionedScalar("mdot",dimDensity/dimTime,0.)   
+    dimensionedScalar("mdot",dimDensity/dimTime,0.)
 );
 dimensionedScalar pore_size("ps",dimLength,ps.poreSize());
 
@@ -165,8 +165,7 @@ volTensorField Kp
         IOobject::AUTO_WRITE
     ),
     mesh,
-    dimensionedTensor("K",dimViscosity*dimDensity/dimArea,tensor::zero)   
+    dimensionedTensor("K",dimViscosity*dimDensity/dimArea,tensor::zero)
 );
 
-
-
+scalar globalContErr = 0;

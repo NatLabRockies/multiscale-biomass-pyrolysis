@@ -1,11 +1,11 @@
     MRF.correctBoundaryVelocity(U);
 
-    Kp = tensor::I 
+    Kp = tensor::I
         * turbulence->muEff() * ( 1.0 - alpha )
         * (
             (150. * (alpha) )
             /
-            ( sqr(alpha) * alpha * sqr(pore_size) ) 
+            ( sqr(alpha) * alpha * sqr(pore_size) )
         );
 
     /*
@@ -14,7 +14,7 @@
             Kp[cellI] = tensor::I;
             Kp[cellI].xx() = mu[cellI]/   sqr(pore_size);
             Kp[cellI].yy() = ...
-            Kp[cellI].zz() = 0;    
+            Kp[cellI].zz() = 0;
        }
     */
 
@@ -23,7 +23,7 @@
 
     fvVectorMatrix UEqn
     (
-        fvm::ddt(alpha, rho, U) + fvm::div(alphaPhi, U)
+        fvm::ddt(alpha,rho, U) + fvm::div(phi, U,"div(phi,U)")
       + turbulence->divDevRhoReff(U)
       + fvm::Sp(tr(Kp), U) + ( (Kp - (tensor::I*tr(Kp)))&U )
      ==

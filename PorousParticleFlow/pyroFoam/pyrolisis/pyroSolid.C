@@ -258,7 +258,7 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
     {
         m_species[specieI] = m_wi[specieI] * ( m_rhoField  / dimensionedScalar("rho", dimDensity, m_rho[specieI]) );
     }
-    
+
 }
 
 pyroSolid::~pyroSolid()
@@ -366,9 +366,9 @@ void pyroSolid::evolve()
         forAll(m_wi[specieI],cellI)
         {
             m_wi[specieI][cellI] = m_species[specieI][cellI] * m_rho[specieI] / ( 1e-12 + m_rhoField[cellI] * (1.0 - m_porosity[cellI]) );
-        } 
+        }
         m_wi[specieI].correctBoundaryConditions();
-    }    
+    }
 
 }
 
@@ -413,7 +413,7 @@ const volScalarField& pyroSolid::RR(const word& name)
         FatalErrorInFunction << "Error: unknown gas specie " << name << "\n" << abort(FatalError);
     }
 
-    Info << "Gas specie " << name  << " id: " << m_is_gas[id].second << " transfer mass: " << fvc::domainIntegrate(m_reactionRates[m_is_gas[id].second]) << endl;
+    //Info << "Gas specie " << name  << " id: " << m_is_gas[id].second << " transfer mass: " << fvc::domainIntegrate(m_reactionRates[m_is_gas[id].second]) << endl;
     return m_reactionRates[m_is_gas[id].second];
 }
 
@@ -470,8 +470,8 @@ void pyroSolid::updateHTC()
 
         specificAreas[cellI] = mag(cutCell.faceArea())/V[cellI];
     }
-    
-    scalar htc_conv = 359;    
+
+    scalar htc_conv = 359;
 
     forAll(m_htc, cellI)
     {
@@ -483,7 +483,7 @@ void pyroSolid::updateHTC()
         }
 
         // Add surface area per unit volume to be consistent with equations
-        m_htc[cellI] = 
+        m_htc[cellI] =
             ( ( Nu[cellI]/m_poreSize * kappa ) * ( 6.0 * (1.0 - m_porosity[cellI] ) / m_poreSize) )
           + htc_conv * specificAreas[cellI];
     }

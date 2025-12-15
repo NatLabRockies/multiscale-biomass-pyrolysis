@@ -35,10 +35,10 @@ Description
     fvScalarMatrix rhoEqn
     (
         fvm::ddt(alpha, rho)
-      + fvc::div(alphaPhi)
+      + fvc::div(phi)
       ==
         mdot
-      + fvOptions(alpha, rho)
+      + fvOptions(rho)
     );
 
     fvOptions.constrain(rhoEqn);

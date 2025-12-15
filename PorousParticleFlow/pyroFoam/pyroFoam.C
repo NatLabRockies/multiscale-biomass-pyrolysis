@@ -1,15 +1,15 @@
 /*---------------------------------------------------------------------------*\
 pyroFoam - OpenFOAM solver for reacting multiphase flows with pyrolisis
 
-Copyright: 
+Copyright:
     Alliance for Energy Innovation (2025).
 
-Author: 
+Author:
     Federico Municchi, NLR (2025).
 
-NOTE: 
+NOTE:
     This application is based on rhoReactingBuoyantFoam and compiles with
-    OpenFOAM-v2406        
+    OpenFOAM-v2406
 
 \*---------------------------------------------------------------------------*/
 
@@ -79,13 +79,14 @@ int main(int argc, char *argv[])
 
         #include "rhoEqn.H"
 
+        //rho = alpha*thermo.rho();
+
         // --- Pressure-velocity PIMPLE corrector loop
         while (pimple.loop())
         {
 
             ps.evolve();
             alphaf = fvc::interpolate(alpha);
-            alphaPhi = alphaf * phi;
 
             #include "UEqn.H"
             #include "YEqn.H"
@@ -104,6 +105,10 @@ int main(int argc, char *argv[])
         }
 
         rho = thermo.rho();
+        cumulativeContErr += globalContErr;
+        Info<< "time step continuity errors : cumulative = " << cumulativeContErr
+            << endl;
+
 
         runTime.write();
 
