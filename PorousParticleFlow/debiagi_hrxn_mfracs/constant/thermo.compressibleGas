@@ -1,0 +1,622 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      thermo.compressibleGas;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+N2
+{
+    specie
+    {
+        molWeight   28.0134;
+    }
+    thermodynamics
+    {
+        Hf          0;
+        Cp          1121;
+    }
+    transport
+    {
+        mu          3.58e-5;
+        Pr          0.71;
+    }
+}
+C24H28O4
+{
+    specie
+    {
+        molWeight   380.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          669.2698008604768;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+C2H3CHO
+{
+    specie
+    {
+        molWeight   56.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1242.4969566517093;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+C2H4
+{
+    specie
+    {
+        molWeight   28.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1531.0975121092438;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+C2H5CHO
+{
+    specie
+    {
+        molWeight   58.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1297.3150720048573;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+C2H5OH
+{
+    specie
+    {
+        molWeight   46.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1379.9566132471266;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+C2H6
+{
+    specie
+    {
+        molWeight   30.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1749.3349750777709;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+C5H8O4
+{
+    specie
+    {
+        molWeight   132.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1008.2652550130397;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+C6H10O5
+{
+    specie
+    {
+        molWeight   162.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1057.2530874481201;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+C6H5OCH3
+{
+    specie
+    {
+        molWeight   108.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1143.2972133527412;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+C6H5OH
+{
+    specie
+    {
+        molWeight   94.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1098.7482886548628;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+C6H6O3
+{
+    specie
+    {
+        molWeight   126.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1025.0260143789249;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+CH2O
+{
+    specie
+    {
+        molWeight   30.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1179.3618318919807;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+CH2OHCH2CHO
+{
+    specie
+    {
+        molWeight   74.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1264.8118154131905;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+CH2OHCHO
+{
+    specie
+    {
+        molWeight   60.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1106.1782317300936;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+CH3CHO
+{
+    specie
+    {
+        molWeight   44.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1256.8391453899567;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+CH3CO2H
+{
+    specie
+    {
+        molWeight   60.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1056.8558751559228;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+CH3OH
+{
+    specie
+    {
+        molWeight   32.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1340.7661575788707;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+CH4
+{
+    specie
+    {
+        molWeight   16.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          2230.2207853417776;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+CHOCHO
+{
+    specie
+    {
+        molWeight   58.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1041.185252532495;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+CO
+{
+    specie
+    {
+        molWeight   28.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1040.6851211560213;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+CO2
+{
+    specie
+    {
+        molWeight   44.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          843.7740277561866;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+CRESOL
+{
+    specie
+    {
+        molWeight   108.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1164.362600399619;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+FURFURAL
+{
+    specie
+    {
+        molWeight   96.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          988.9863285555634;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+H2
+{
+    specie
+    {
+        molWeight   2.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          14416.595705268624;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+H2O
+{
+    specie
+    {
+        molWeight   18.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1865.8543540790429;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+HCOOH
+{
+    specie
+    {
+        molWeight   46.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          897.67671036152;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+MLINO
+{
+    specie
+    {
+        molWeight   294.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1474.56639801358;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+N2
+{
+    specie
+    {
+        molWeight   28.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1040.0881656311146;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+O2
+{
+    specie
+    {
+        molWeight   16.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1835.9087028994384;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+U2ME12
+{
+    specie
+    {
+        molWeight   210.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1454.0699124353891;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}
+
+VANILLIN
+{
+    specie
+    {
+        molWeight   152.0;
+    }
+    thermodynamics
+    {
+    
+        Hf          0;
+        Cp          1081.68405752892;
+    }
+    transport
+    {
+        mu          3e-05;
+        Pr          0.7;
+    }
+}

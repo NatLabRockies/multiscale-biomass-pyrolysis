@@ -1,0 +1,35 @@
+#!/bin/bash
+#SBATCH --job-name=mfdebporohrxn
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=64
+#SBATCH --time=48:00:00
+#SBATCH --account=biocon
+#SBATCH --output=pyroout
+#SBATCH --error=pyroerr
+#SBATCH --mail-user=mcrowley2@nrel.gov
+#SBATCH --mail-type=all
+
+#module purge
+#module load conda
+#source activate yt
+#python write_stl_circle_on_cylinder.py constant/globalVars 60
+#source deactivate yt
+
+#module purge
+#module load openfoam/9-craympich
+source /projects/biocon/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
+./Allclean
+echo "copying init"
+cp -r init 0
+echo "running blockMesh"
+blockMesh
+echo "running snappyHexMesh"
+snappyHexMesh -overwrite
+echo "setting fields"
+setFields
+echo "decomposing"
+decomposePar
+echo "running"
+srun -n 64 pyroFoam_mfrac -parallel
+echo "reconstructing"
+reconstructPar -newTimes
