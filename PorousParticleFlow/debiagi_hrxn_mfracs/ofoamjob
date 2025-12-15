@@ -16,8 +16,8 @@
 #source deactivate yt
 
 #module purge
-#module load openfoam/9-craympich
-source /projects/biocon/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
+module load openfoam/v2406-craympich-gcc
+#source /projects/biocon/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
 ./Allclean
 echo "copying init"
 cp -r init 0
@@ -30,6 +30,6 @@ setFields
 echo "decomposing"
 decomposePar
 echo "running"
-srun -n 64 pyroFoam_mfrac -parallel
+srun -n 64 -K1  pyroFoam_mfrac -parallel
 echo "reconstructing"
 reconstructPar -newTimes
