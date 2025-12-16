@@ -34,8 +34,9 @@ void TranspReact::chemistry_advance(int lev, Real time, Real dt_lev,
                                     MultiFab &adsrc_lev, 
                                     MultiFab &phi_old_lev, MultiFab &phi_new_lev)
 {
-    MultiFab& S_new = phi_new_lev; // old value
-    MultiFab& S_old = phi_old_lev; // current value
+    //copy old to new as initial condition
+    amrex::MultiFab::Copy(phi_new_lev, phi_old_lev, 
+                      0, 0, phi_new_lev.nComp(), 0);
 
     int unsolved_species[NUM_SPECIES]={0};
     int steady_species[NUM_SPECIES]={0};
@@ -46,10 +47,8 @@ void TranspReact::chemistry_advance(int lev, Real time, Real dt_lev,
         steady_species[ind]=steadyspec[ind];
     }
 
-    auto rhs_function = [&] ( Vector<MultiFab> & dSdt_vec, 
-                             const Vector<MultiFab>& S_vec, const Real time) {
-        auto & dSdt = dSdt_vec[0];
-        MultiFab S(S_vec[0], amrex::make_alias, 0, S_vec[0].nComp());
+    auto rhs_function = [&] ( MultiFab& dSdt, 
+                             MultiFab& S, const Real time) {
         update_rxnsrc_at_level(lev, S, dSdt, time);
         amrex::MultiFab::Saxpy(dSdt, 1.0, adsrc_lev, 0, 0, NUM_SPECIES, 0);
         for(unsigned int ind=0;ind<NUM_SPECIES;ind++)
@@ -61,20 +60,14 @@ void TranspReact::chemistry_advance(int lev, Real time, Real dt_lev,
         }
     };
 
-    auto rhs_null_function = [&] ( Vector<MultiFab> & dSdt_vec, 
-                                  const Vector<MultiFab>& S_vec, const Real time) {
-        auto & dSdt = dSdt_vec[0];
+    auto rhs_null_function = [&] ( MultiFab& dSdt, 
+                                  MultiFab& S, const Real time) {
         dSdt.setVal(0.0);
-
     };
-    Vector<MultiFab> state_old, state_new;
 
-    // This term has the current state
-    state_old.push_back(MultiFab(S_old, amrex::make_alias, 0, S_new.nComp()));
-    // This is where the integrator puts the new state, hence aliased to S_new
-    state_new.push_back(MultiFab(S_new, amrex::make_alias, 0, S_new.nComp()));
     // Define the integrator
-    TimeIntegrator<Vector<MultiFab>> integrator(state_old);
+    TimeIntegrator<MultiFab> integrator(phi_new_lev,time);
+    integrator.set_time_step(dt_lev);
     if(integration_type=="SUNDIALS")
     {
         if(integration_sd_type=="ERK" || integration_sd_type=="DIRK")
@@ -90,9 +83,11 @@ void TranspReact::chemistry_advance(int lev, Real time, Real dt_lev,
                 integration_sd_type=="IM-MRI" ||
                 integration_sd_type=="IMEX-MRI")
         {
+            amrex::Real fast_dt_ratio=0.1;
             //always assume reaction is the fast rhs
             integrator.set_rhs(rhs_null_function);
             integrator.set_fast_rhs(rhs_function);
+            integrator.set_fast_time_step(fast_dt_ratio*dt_lev);
         }
         else
         {
@@ -105,7 +100,8 @@ void TranspReact::chemistry_advance(int lev, Real time, Real dt_lev,
     }
     // Advance from time to time + dt_lev
     //S_new/phi_new should have the new state
-    integrator.advance(state_old, state_new, time, dt_lev); 
+    //
+    integrator.evolve(phi_new_lev, time+dt_lev); 
 }
 
 void TranspReact::update_advsrc_at_all_levels(int specid,Vector<MultiFab>& Sborder,
@@ -144,9 +140,9 @@ void TranspReact::update_advsrc_at_all_levels(int specid,Vector<MultiFab>& Sbord
     for(int lev=0; lev <= finest_level; lev++)
     {
         compute_scalar_advection_flux(specid, lev, Sborder[lev], 
-                flux[lev], all_bcs_lo[specid], 
-                all_bcs_hi[specid], 
-                cur_time,conjsolve);
+                                      flux[lev], all_bcs_lo[specid], 
+                                      all_bcs_hi[specid], 
+                                      cur_time,conjsolve);
 
         //div sources adds on to the flux
         //these are source that look like div (something)
