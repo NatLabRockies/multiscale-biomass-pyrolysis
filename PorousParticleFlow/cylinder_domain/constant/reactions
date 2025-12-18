@@ -1,0 +1,38 @@
+species
+(
+    C24H28O4
+    C2H3CHO
+    C2H4
+    C2H5CHO
+    C2H5OH
+    C2H6
+    C5H8O4
+    C6H10O5
+    C6H5OCH3
+    C6H5OH
+    C6H6O3
+    CH2O
+    CH2OHCH2CHO
+    CH2OHCHO
+    CH3CHO
+    CH3CO2H
+    CH3OH
+    CH4
+    CHOCHO
+    CO
+    CO2
+    CRESOL
+    FURFURAL
+    H2
+    H2O
+    HCOOH
+    MLINO
+    N2
+    O2
+    U2ME12
+    VANILLIN
+); 
+
+reactions
+{
+}

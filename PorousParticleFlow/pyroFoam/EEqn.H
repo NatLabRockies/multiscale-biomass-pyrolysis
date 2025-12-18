@@ -18,7 +18,7 @@
       - fvm::laplacian(alpha*turbulence->alphaEff(), he)
       + fvm::Sp(ps.HTC()/thermo.Cpv(), he)
      ==
-         Qdot
+        alpha * Qdot
       +  ( ps.HTC() * ( ps.T() - T + he/thermo.Cpv() ) )
       + fvOptions(alpha, rho, he)
     );

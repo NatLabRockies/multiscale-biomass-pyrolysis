@@ -445,22 +445,18 @@ const scalar& pyroSolid::poreSize()
 
 void pyroSolid::updateHTC()
 {
+
+    dictionary htc_dict(m_dict.subDict("heatTransferModel"));
+    scalar htc_conv(htc_dict.get<scalar>("convective_htc"));
+    word porous_htc_model(htc_dict.get<word>("porous_htc_model"));
+
     const auto& mu = m_mesh.lookupObject<volScalarField>("thermo:mu");
     dimensionedScalar dimPS("dimPS",dimLength,m_poreSize);
     const auto& rho = m_mesh.lookupObject<volScalarField>("rho");
     const auto& U = m_mesh.lookupObject<volVectorField>("U");
     const auto& V = m_mesh.V();
-    //const volTensorField Kp = m_mesh.lookupObject<volTensorField>("Kp");
-
-    // Compute bulk heat transfer
-    const volScalarField Re = mag(U) * rho * dimPS / mu;
-    const scalar Pr = 0.7;
-    //volScalarField Nu = sqrt( mag(Kp) / mu ) / dimPS;
-
-    // Withaker correlation
-    const volScalarField Nu = (1. - m_porosity) * ( 2. + 1.1 * pow(Re, 0.6) * pow(Pr,1.0/3.0));
-
-    // Compute interface convective heat transfer
+    
+            // Compute interface convective heat transfer
     scalarField ap = volPointInterpolation::New(m_mesh).interpolate(m_porosity);
     volScalarField specificAreas = m_porosity*0.;
     cutCellIso cutCell(m_mesh, ap);
@@ -471,24 +467,56 @@ void pyroSolid::updateHTC()
         specificAreas[cellI] = mag(cutCell.faceArea())/V[cellI];
     }
 
-    scalar htc_conv = 359;
 
-    forAll(m_htc, cellI)
+    if (porous_htc_model == "sphere")
     {
-        scalar kappa(0.);
+        // Compute bulk heat transfer
+        const volScalarField Re = mag(U) * rho * dimPS / mu;
+        const scalar Pr = 0.7;
+        //volScalarField Nu = sqrt( mag(Kp) / mu ) / dimPS;
 
-        forAll(m_kappa, specieI)
+        // Withaker correlation
+        const volScalarField Nu = (1. - m_porosity) * ( 2. + 1.1 * pow(Re, 0.6) * pow(Pr,1.0/3.0));
+
+
+        forAll(m_htc, cellI)
         {
-            kappa += m_kappa[specieI]*m_species[specieI][cellI];
+            scalar kappa(0.);
+
+            forAll(m_kappa, specieI)
+            {
+                kappa += m_kappa[specieI]*m_species[specieI][cellI];
+            }
+
+            // Add surface area per unit volume to be consistent with equations
+            m_htc[cellI] =
+                ( ( Nu[cellI]/m_poreSize * kappa ) * ( 6.0 * (1.0 - m_porosity[cellI] ) / m_poreSize) )
+              + htc_conv * specificAreas[cellI];
         }
 
-        // Add surface area per unit volume to be consistent with equations
-        m_htc[cellI] =
-            ( ( Nu[cellI]/m_poreSize * kappa ) * ( 6.0 * (1.0 - m_porosity[cellI] ) / m_poreSize) )
-          + htc_conv * specificAreas[cellI];
-    }
+        m_htc.correctBoundaryConditions();
 
-    m_htc.correctBoundaryConditions();
+    }
+    else if (porous_htc_model == "useConvective")
+    {
+        forAll(m_htc, cellI)
+        {
+            scalar kappa(0.);
+
+            forAll(m_kappa, specieI)
+            {
+                kappa += m_kappa[specieI]*m_species[specieI][cellI];
+            }
+
+            m_htc[cellI] = htc_conv * ( specificAreas[cellI] + ( 6.0 * (1.0 - m_porosity[cellI] ) / m_poreSize) );
+        }
+
+        m_htc.correctBoundaryConditions();    
+    }
+    else
+    {
+        FatalErrorInFunction << "porous_htc_model\n" << abort(FatalError);   
+    }
 
 
 }

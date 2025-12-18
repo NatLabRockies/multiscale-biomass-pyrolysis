@@ -1,0 +1,26 @@
+cylrad 0.0034;
+cylht 0.008;
+cylmidr #calc "$cylrad*0.5";
+cylmidz #calc "$cylht*0.5";
+domx #calc "5.0*$cylrad";
+domy #calc "5.0*$cylrad";
+sidesrad #calc "$domy/2";
+domz #calc "5.0*$cylrad";
+xmid #calc "0.005+$cylrad";
+ymid #calc "$domy*0.5";
+zmid #calc "$domz*0.5";
+cyltopz #calc "$zmid+$cylmidz";
+cylbotz #calc "$zmid-$cylmidz";
+wallT 300;
+poro 0.16; // from pine pellet XCT
+Uin 0.175; // estimated from COMSOL
+Tpart0 300;
+// compositonal fractions from mass spec of loblolly pine
+CELL_0 0.385;  // biomass cellulose fraction
+GMSW_0 0.23;  // biomass softwood hemicellulose fraction
+LIGH_0 0.183;   // biomass lignin (H-rich) fraction
+LIGO_0 0.117; // biomass lignin (O-rich) fraction
+LIGC_0 0; // biomass lignin (C-rich) fraction
+TGL_0 0.024; // biomass tannin fraction
+ACQUA_0 0.061; // biomass moisture content
+

@@ -1,0 +1,183 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  7  
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "${FOAM_CASE}/constant/globalVars"
+castellatedMesh true;
+snap            true;
+//snap            false;
+addLayers       true;
+
+geometry
+{
+    particle
+    {
+        type searchableCylinder;
+        point1 ($xmid $ymid #calc " $cylbotz - 0.2 * $cylrad");
+        point2 ($xmid $ymid #calc " $cyltopz + 0.2 * $cylrad");
+        radius #calc "1.2 * $cylrad";
+    }
+    
+    sides
+    {
+
+        type searchableCylinder;
+        point1 (-100 $sidesrad $sidesrad);
+        point2 (100 $sidesrad $sidesrad);
+        radius $sidesrad;
+    }
+    
+}
+
+
+castellatedMeshControls
+{
+
+    maxLocalCells 100000;
+
+    maxGlobalCells 2000000;
+
+    minRefinementCells 0;
+
+    nCellsBetweenLevels 2;
+
+    maxLoadUnbalance 0.10;
+
+    features
+    (
+
+    );
+
+    resolveFeatureAngle 30;
+
+    refinementSurfaces
+    {
+ /*       particle
+        {
+         // change this to have higher resolution at surface of particle
+            level (1 1);
+            cellZone cellParticleZone;
+            faceZone faceParticleZone;
+            mode        inside;
+        } */
+        
+        sides
+        {
+         // change this to have higher resolution at surface of particle
+            level (0 0);
+        }
+    }
+
+    refinementRegions
+    {
+    // change this to have higher resolution inside particle
+        particle
+        {
+            mode inside;
+            levels ((1 1));
+        }
+        
+    }
+
+    locationInMesh (0.01 0.01 0.0); // Inside point
+
+    allowFreeStandingZoneFaces true;
+}
+
+// Settings for the snapping.
+snapControls
+{
+
+    nSmoothPatch 3;
+
+    tolerance 1.0;
+
+    nSolveIter 300;
+
+    nRelaxIter 10;
+
+    nFeatureSnapIter 10;
+
+    implicitFeatureSnap true;
+
+    explicitFeatureSnap false;
+
+    multiRegionFeatureSnap true;
+}
+
+// Settings for the layer addition.
+addLayersControls
+{
+
+    relativeSizes true;
+
+    layers
+    {
+        sides
+        {
+            nSurfaceLayers 1;
+        }
+    }
+
+    expansionRatio 1.0;
+
+    finalLayerThickness 0.3;
+
+    minThickness 0.25;
+
+    nGrow 0;
+
+    featureAngle 30;
+
+    nRelaxIter 5;
+
+    nSmoothSurfaceNormals 1;
+
+    nSmoothNormals 3;
+
+    nSmoothThickness 10;
+
+    maxFaceThicknessRatio 0.5;
+
+    maxThicknessToMedialRatio 0.3;
+
+    minMedialAxisAngle 90;
+
+    nBufferCellsNoExtrude 0;
+
+    nLayerIter 50;
+
+    nRelaxedIter 20;
+}
+
+meshQualityControls
+{
+    #include "meshQualityDict"
+
+    relaxed
+    {
+        maxNonOrtho 75;
+    }
+}
+
+writeFlags
+(
+);
+
+mergeTolerance 1E-6;
+
+
+// ************************************************************************* //
