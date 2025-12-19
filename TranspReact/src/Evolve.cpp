@@ -358,6 +358,7 @@ void TranspReact::Evolve_split()
 
         // Solution and sources MFs
         Vector<MultiFab> rxn_src(finest_level+1);
+        Vector<MultiFab> rxn_src_steady(finest_level+1);
         Vector<MultiFab> Sborder(finest_level+1);
         Vector<MultiFab> Sborder_old(finest_level+1);
         Vector<MultiFab> phi_tmp(finest_level+1);
@@ -390,6 +391,9 @@ void TranspReact::Evolve_split()
 
             rxn_src[lev].define(grids[lev], dmap[lev], NUM_SPECIES, 0);
             rxn_src[lev].setVal(0.0);
+            
+            rxn_src_steady[lev].define(grids[lev], dmap[lev], NUM_SPECIES, 0);
+            rxn_src_steady[lev].setVal(0.0);
 
             adv_src[lev].define(grids[lev], dmap[lev], 1, 0);
             adv_src[lev].setVal(0.0);
@@ -415,6 +419,7 @@ void TranspReact::Evolve_split()
                 //at first iter phi new and old are same
                 FillPatch(lev, cur_time+dt_common, Sborder[lev], 0, Sborder[lev].nComp());
                 rxn_src[lev].setVal(0.0);
+                rxn_src_steady[lev].setVal(0.0);
             }
             
             for(int inner_iter=0;inner_iter<num_split_correctors;inner_iter++)
@@ -430,6 +435,7 @@ void TranspReact::Evolve_split()
 
                     amrex::MultiFab::Saxpy(rxn_src[lev], -1.0, advdiff_src[lev], 0, 0, NUM_SPECIES, 0);
                 }
+            
                 
                 //transform any variables
                 if(transform_vars)
@@ -522,7 +528,13 @@ void TranspReact::Evolve_split()
                         {
                             update_advsrc_at_all_levels(ind, Sborder, adv_src, cur_time+time_offset,0);
                         }
-                        implicit_solve_scalar(cur_time+time_offset, dt_common, ind, Sborder, Sborder_old, rxn_src, adv_src,0);
+                        
+                        for(int lev=0;lev<=finest_level;lev++)
+                        {
+                            int only_steady_sources=1;
+                            update_rxnsrc_at_level(lev, Sborder[lev], rxn_src_steady[lev], cur_time+time_offset, only_steady_sources);
+                        }
+                        implicit_solve_scalar(cur_time+time_offset, dt_common, ind, Sborder, Sborder_old, rxn_src_steady, adv_src,0);
                     }
                     else
                     {
@@ -539,7 +551,7 @@ void TranspReact::Evolve_split()
                                     //at first iter phi new and old are same
                                     FillPatch(lev, cur_time+dt_common, Sborder[lev], 0, Sborder[lev].nComp());
                                 }
-                                
+
                                 //update interface cells with neighbor averages
                                 for(int iter=0;iter<interface_update_maxiter;iter++)
                                 {
@@ -567,6 +579,11 @@ void TranspReact::Evolve_split()
                                 if(do_advection)
                                 {
                                     update_advsrc_at_all_levels(ind, Sborder, adv_src, cur_time+time_offset,csolve);
+                                }
+                                for(int lev=0;lev<=finest_level;lev++)
+                                {
+                                    int only_steady_sources=1;
+                                    update_rxnsrc_at_level(lev, Sborder[lev], rxn_src_steady[lev], cur_time+time_offset, only_steady_sources);
                                 }
                                 implicit_solve_scalar(cur_time+time_offset, dt_common, ind, Sborder, Sborder_old, rxn_src, adv_src,csolve);
                                 amrex::Print()<<"conjugate solve for spec "<<ind<<" ends:"<<csolve<<"==============\n";

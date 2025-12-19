@@ -363,13 +363,28 @@ void TranspReact::compute_scalar_advection_flux(int specid,int lev, MultiFab& Sb
     }
 }
 
-void TranspReact::update_rxnsrc_at_level(int lev, MultiFab &S, MultiFab &dSdt, amrex::Real time)
+void TranspReact::update_rxnsrc_at_level(int lev, MultiFab &S, MultiFab &dSdt, amrex::Real time, int only_steady_sources)
 {
     ProbParm const* localprobparm = d_prob_parm;
     dSdt.setVal(0.0);
     const auto dx = geom[lev].CellSizeArray();
     auto prob_lo = geom[lev].ProbLoArray();
     auto prob_hi = geom[lev].ProbHiArray();
+    
+    amrex::Real include_unsteadysources[NUM_SPECIES]={0};
+    for(unsigned int ind=0;ind<NUM_SPECIES;ind++)
+    {
+        include_unsteadysources[ind]=1.0;
+    }
+
+    if(only_steady_sources)
+    {
+        for(unsigned int ind=0;ind<NUM_SPECIES;ind++)
+        {
+            //zeros out all unsteady sources
+            include_unsteadysources[ind]=amrex::Real(steadyspec[ind]);
+        }
+    }
 
 
     for (MFIter mfi(S, TilingIfNotGPU()); mfi.isValid(); ++mfi)
@@ -385,6 +400,10 @@ void TranspReact::update_rxnsrc_at_level(int lev, MultiFab &S, MultiFab &dSdt, a
             tr_reactions::production_rate(i, j, k, s_arr, dsdt_arr,
                                           prob_lo, prob_hi, dx, time, *localprobparm);
 
+            for(int sp=0;sp<NUM_SPECIES;sp++)
+            {
+                dsdt_arr(i,j,k,sp)*=include_unsteadysources[sp];
+            }
         });
     }
 

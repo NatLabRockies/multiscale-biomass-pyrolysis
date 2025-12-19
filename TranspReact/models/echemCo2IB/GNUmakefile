@@ -1,6 +1,6 @@
 TR_DIR ?= ../../
 AMREX_HOME ?= ../../../../amrex
-SUNDIALS_DIR?=/Users/hsitaram/projects/ccpc/multiscale-biomass-pyrolysis/TranspReact/sdbld
+SUNDIALS_HOME?=/Users/hsitaram/projects/ccpc/multiscale-biomass-pyrolysis/TranspReact/sdbld
 
 PRECISION  = DOUBLE
 PROFILE    = FALSE
@@ -21,9 +21,5 @@ HYPRE_DIR=/Users/hsitaram/projects/ldrd_battery/echemAMR/hypre/src/hypre/
 
 Bpack   := ./Make.package 
 Blocs   := . 
-
-INCLUDE_LOCATIONS += ${SUNDIALS_DIR}/include
-LIBRARIES += -L$(SUNDIALS_DIR)/lib64 -lsundials_cvode -lsundials_arkode
-LIBRARIES += -L$(SUNDIALS_DIR)/lib64 -lsundials_core -lsundials_nvecserial -lsundials_nvecmanyvector
 
 include ${TR_DIR}/Make.tr
