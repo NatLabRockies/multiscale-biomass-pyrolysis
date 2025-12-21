@@ -54,3 +54,11 @@ tr.unsolved_species_ids=2 3 4
 tr.steady_species_ids=1
 tr.transform_vars=1
 tr.hyp_order=5
+
+#tr.split_chemistry=1
+#integration.type=SUNDIALS
+#integration.sundials.type="DIRK"
+#integration.sundials.method="ARKODE_IMPLICIT_MIDPOINT_1_2"
+
+#integration.type="RungeKutta"
+#integration.rk.type=3

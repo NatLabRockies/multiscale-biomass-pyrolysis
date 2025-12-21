@@ -1,6 +1,6 @@
 TR_DIR ?= ../../
 AMREX_HOME ?= ../../../../amrex
-SUNDIALS_DIR?=/projects/co2rue/sundials
+SUNDIALS_HOME?=/projects/co2rue/sundials
 
 PRECISION  = DOUBLE
 PROFILE    = FALSE
@@ -22,11 +22,5 @@ HYPRE_DIR=/projects/co2rue/hypre
 
 Bpack   := ./Make.package 
 Blocs   := . 
-
-ifeq ($(USE_SUNDIALS), TRUE)
-    INCLUDE_LOCATIONS += ${SUNDIALS_DIR}/include
-    LIBRARIES += -L$(SUNDIALS_DIR)/lib64 -lsundials_cvode -lsundials_arkode
-    LIBRARIES += -L$(SUNDIALS_DIR)/lib64 -lsundials_core -lsundials_nvecserial -lsundials_nvecmanyvector
-endif
 
 include ${TR_DIR}/Make.tr

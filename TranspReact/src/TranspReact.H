@@ -137,7 +137,7 @@ public:
             MultiFab &phi_new_lev);
 
     void update_rxnsrc_at_level(int lev, MultiFab &S, 
-            MultiFab &dSdt, amrex::Real time);
+            MultiFab &dSdt, amrex::Real time,int only_steady_sources=0);
 
     static ProbParm* h_prob_parm;
     static ProbParm* d_prob_parm;
