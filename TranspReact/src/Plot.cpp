@@ -26,18 +26,28 @@ Vector<const MultiFab*> TranspReact::PlotFileMF() const
     return r;
 }
 // write plotfile to disk
-void TranspReact::WritePlotFile(int plotfilenum) const
+void TranspReact::WritePlotFile(int plotfilenum)
 {
     const std::string& plotfilename = amrex::Concatenate(plot_file, plotfilenum, 5);
+    if(transform_vars)
+    {
+        Vector<MultiFab> Sborder(finest_level+1);
+        for(int lev=0;lev<=finest_level;lev++)
+        {
+            Sborder[lev].define(grids[lev], dmap[lev], phi_new[lev].nComp(), ngrow_for_fillpatch);
+            Sborder[lev].setVal(0.0);
+            FillPatch(lev, t_new[0], Sborder[lev], 0, Sborder[lev].nComp());
+            //sborder old is already with phi_new
+            transform_variables(Sborder,t_new[0]);
+        }
+    }
     const auto& mf = PlotFileMF();
 
-    // amrex::Print() << "Writing plotfile " << plotfilename << "\n";
-
     amrex::WriteMultiLevelPlotfile(plotfilename, finest_level + 1, mf, 
-                                   allvarnames, Geom(), t_new[0], istep, refRatio());
+            allvarnames, Geom(), t_new[0], istep, refRatio());
 }
 
-void TranspReact::WriteCheckpointFile(int chkfilenum) const
+void TranspReact::WriteCheckpointFile(int chkfilenum)
 {
 
     // chk00010            write a checkpoint file with this root directory
@@ -48,6 +58,18 @@ void TranspReact::WriteCheckpointFile(int chkfilenum) const
     // etc.                these subdirectories will hold the MultiFab data at each level of refinement
 
     // checkpoint file name, e.g., chk00010
+    if(transform_vars)
+    {
+        Vector<MultiFab> Sborder(finest_level+1);
+        for(int lev=0;lev<=finest_level;lev++)
+        {
+            Sborder[lev].define(grids[lev], dmap[lev], phi_new[lev].nComp(), ngrow_for_fillpatch);
+            Sborder[lev].setVal(0.0);
+            FillPatch(lev, t_new[0], Sborder[lev], 0, Sborder[lev].nComp());
+            //sborder old is already with phi_new
+            transform_variables(Sborder,t_new[0]);
+        }
+    }
     const std::string& checkpointname = amrex::Concatenate(chk_file, chkfilenum);
 
     amrex::Print() << "Writing checkpoint " << checkpointname << "\n";
@@ -71,7 +93,7 @@ void TranspReact::WriteCheckpointFile(int chkfilenum) const
         std::ofstream HeaderFile;
         HeaderFile.rdbuf()->pubsetbuf(io_buffer.dataPtr(), io_buffer.size());
         HeaderFile.open(HeaderFileName.c_str(), std::ofstream::out | 
-                        std::ofstream::trunc | std::ofstream::binary);
+                std::ofstream::trunc | std::ofstream::binary);
         if (!HeaderFile.good())
         {
             amrex::FileOpenFailed(HeaderFileName);
