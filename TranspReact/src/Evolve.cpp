@@ -135,7 +135,7 @@ void TranspReact::Evolve_coupled()
             if(transform_vars)
             {
                 //sborder old is already with phi_new
-                transform_variables(Sborder,cur_time);
+                transform_variables(Sborder,cur_time,dt_common);
             }
 
             for(int lev=0;lev<=finest_level;lev++)
@@ -249,6 +249,11 @@ void TranspReact::Evolve_coupled()
 
         if (plot_time > 0)
         {
+            if(transform_vars)
+            {
+                //sborder old is already with phi_new
+                transform_variables(Sborder,cur_time,dt_common);
+            }
             if(plottime > plot_time)
             {
                 last_plot_file_step = step + 1;
@@ -259,6 +264,11 @@ void TranspReact::Evolve_coupled()
         }
         else if (plot_int > 0 && (step + 1) % plot_int == 0)
         {
+            if(transform_vars)
+            {
+                //sborder old is already with phi_new
+                transform_variables(Sborder,cur_time,dt_common);
+            }
             last_plot_file_step = step + 1;
             plotfilenum++;
             WritePlotFile(plotfilenum);
@@ -266,6 +276,11 @@ void TranspReact::Evolve_coupled()
 
         if(chk_time > 0)
         {
+            if(transform_vars)
+            {
+                //sborder old is already with phi_new
+                transform_variables(Sborder,cur_time,dt_common);
+            }
             if(chktime > chk_time)
             {
                 chkfilenum++;
@@ -276,6 +291,11 @@ void TranspReact::Evolve_coupled()
         }
         else if (chk_int > 0 && (step + 1) % chk_int == 0)
         {
+            if(transform_vars)
+            {
+                //sborder old is already with phi_new
+                transform_variables(Sborder,cur_time,dt_common);
+            }
             amrex::Print()<<"writing chk file 1\n";
             chkfilenum++;
             WriteCheckpointFile(chkfilenum);
@@ -441,7 +461,7 @@ void TranspReact::Evolve_split()
                 if(transform_vars)
                 {
                     //sborder old is already with phi_new
-                    transform_variables(Sborder,cur_time);
+                    transform_variables(Sborder,cur_time,dt_common);
                 }
 
                 for(unsigned int ind=0;ind<NUM_SPECIES;ind++)
@@ -632,6 +652,11 @@ void TranspReact::Evolve_split()
 
         if (plot_time > 0)
         {
+            if(transform_vars)
+            {
+                //sborder old is already with phi_new
+                transform_variables(Sborder,cur_time,dt_common);
+            }
             if(plottime > plot_time)
             {
                 last_plot_file_step = step + 1;
@@ -642,6 +667,11 @@ void TranspReact::Evolve_split()
         }
         else if (plot_int > 0 && (step + 1) % plot_int == 0)
         {
+            if(transform_vars)
+            {
+                //sborder old is already with phi_new
+                transform_variables(Sborder,cur_time,dt_common);
+            }
             last_plot_file_step = step + 1;
             plotfilenum++;
             WritePlotFile(plotfilenum);
@@ -649,6 +679,11 @@ void TranspReact::Evolve_split()
 
         if(chk_time > 0)
         {
+            if(transform_vars)
+            {
+                //sborder old is already with phi_new
+                transform_variables(Sborder,cur_time,dt_common);
+            }
             if(chktime > chk_time)
             {
                 chkfilenum++;
@@ -659,6 +694,11 @@ void TranspReact::Evolve_split()
         }
         else if (chk_int > 0 && (step + 1) % chk_int == 0)
         {
+            if(transform_vars)
+            {
+                //sborder old is already with phi_new
+                transform_variables(Sborder,cur_time,dt_common);
+            }
             amrex::Print()<<"writing chk file 1\n";
             chkfilenum++;
             WriteCheckpointFile(chkfilenum);
