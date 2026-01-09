@@ -135,7 +135,7 @@ void TranspReact::Evolve_coupled()
             if(transform_vars)
             {
                 //sborder old is already with phi_new
-                transform_variables(Sborder,cur_time);
+                transform_variables(Sborder,cur_time,dt_common);
             }
 
             for(int lev=0;lev<=finest_level;lev++)
@@ -441,7 +441,7 @@ void TranspReact::Evolve_split()
                 if(transform_vars)
                 {
                     //sborder old is already with phi_new
-                    transform_variables(Sborder,cur_time);
+                    transform_variables(Sborder,cur_time,dt_common);
                 }
 
                 for(unsigned int ind=0;ind<NUM_SPECIES;ind++)

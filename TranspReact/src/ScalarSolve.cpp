@@ -881,7 +881,7 @@ void TranspReact::implicit_solve_scalar(Real current_time, Real dt, int spec_id,
     robin_f.clear();
 }
 
-void TranspReact::transform_variables(Vector<MultiFab>& Sborder,amrex::Real cur_time)
+void TranspReact::transform_variables(Vector<MultiFab>& Sborder,amrex::Real cur_time, amrex::Real dt)
 {
     amrex::Real time = cur_time;
     ProbParm const* localprobparm = d_prob_parm;
@@ -913,6 +913,9 @@ void TranspReact::transform_variables(Vector<MultiFab>& Sborder,amrex::Real cur_
 
             });
         }
+        
+        //fill patching with new transformed variables        
+        FillPatch(lev, cur_time+dt, Sborder[lev], 0, Sborder[lev].nComp());
     }
 }
 

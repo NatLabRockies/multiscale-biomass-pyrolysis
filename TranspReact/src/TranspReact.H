@@ -105,7 +105,7 @@ public:
                                   Vector<MultiFab>& rxn_src, 
                                   Vector<MultiFab>& adv_src,int conjsolve); 
     
-    void transform_variables(Vector<MultiFab>& Sborder,amrex::Real cur_time);
+    void transform_variables(Vector<MultiFab>& Sborder,amrex::Real cur_time, amrex::Real dt=1e-10);
 
     //IB functions***************************************************
     void null_bcoeff_at_ib(int ilev, Array<MultiFab, 
@@ -280,10 +280,10 @@ private:
     amrex::Vector<const amrex::MultiFab*> PlotFileMF() const;
 
     // write plotfile to disk
-    void WritePlotFile(int plotfilenum) const;
+    void WritePlotFile(int plotfilenum);
 
     // write checkpoint file to disk
-    void WriteCheckpointFile(int chkfilenum) const;
+    void WriteCheckpointFile(int chkfilenum);
 
     // read checkpoint file from disk
     void ReadCheckpointFile();
