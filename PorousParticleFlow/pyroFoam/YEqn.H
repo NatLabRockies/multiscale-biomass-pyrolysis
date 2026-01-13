@@ -35,8 +35,8 @@ mdot *= 0.;
 
             if( ps.isGasTransferSpecie(Yi.name()) )
             {
-                YiEqn -= ps.RR(Yi.name());
-                mdot -= ps.RR(Yi.name());
+                YiEqn = ( YiEqn == ps.RR(Yi.name()) );
+                mdot += ps.RR(Yi.name()); 
                 RRQdot -= ps.RR(Yi.name())*dimensionedScalar("Hf",dimEnergy/dimMass, composition.Hc(i) );
             }
 

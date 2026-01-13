@@ -39,16 +39,11 @@ private:
 
   label getSpecieId(const word &name);
 
-  void solveEnergy();
-
- // void updateKp();
-  void updateHTC();
-
 public:
   pyroSolid(const fvMesh &mesh);
   ~pyroSolid();
 
-  void evolve();
+  void react();
 
   const volScalarField &porosity();
 
@@ -62,7 +57,14 @@ public:
   const volScalarField& HTC();
   const volScalarField& T();
 
-  volScalarField mdot();
+  const IOdictionary& dict() const {return m_dict;}
+
+  //volScalarField mdot();
+
+  void solveEnergy();
+
+ // void updateKp();
+  void updateHTC();
 };
 
 } // namespace pyrolisis

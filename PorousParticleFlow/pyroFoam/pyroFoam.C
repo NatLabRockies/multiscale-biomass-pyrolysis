@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
         while (pimple.loop())
         {
 
-            ps.evolve();
+            ps.react();
             alphaf = fvc::interpolate(alpha);
 
             #include "UEqn.H"

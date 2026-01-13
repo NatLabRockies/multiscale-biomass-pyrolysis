@@ -264,11 +264,11 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
 pyroSolid::~pyroSolid()
 {}
 
-void pyroSolid::evolve()
+void pyroSolid::react()
 {
 //    updateKp();
 
-    solveEnergy();
+    //solveEnergy();
 
     Info << "Updating solid composition" << endl;
 
@@ -305,7 +305,7 @@ void pyroSolid::evolve()
             //- Convert from [vol_specie/m3] to [mol_specie/m3] by multiplying by density and dividing
             //  by molar weight.
             //  Always use oldTime to make it work with pimple outer iterations.
-            Y[specieI] =  m_species[specieI][cellI] * ( m_rho[specieI] / m_molWeight[specieI] );
+            Y[specieI] =  m_species[specieI].oldTime()[cellI] * ( m_rho[specieI] / m_molWeight[specieI] );
             //Y0[specieI] = Y[specieI];
         }
         scalarField ntot(m_species.size(),0.);
@@ -361,12 +361,28 @@ void pyroSolid::evolve()
     m_rhoField.correctBoundaryConditions();
 
     // Update mass fractions
-    forAll(m_species, specieI)
+    forAll(m_porosity, cellI)
     {
-        forAll(m_wi[specieI],cellI)
+        scalar totw = 0.;
+        forAll(m_species, specieI)
         {
             m_wi[specieI][cellI] = m_species[specieI][cellI] * m_rho[specieI] / ( 1e-12 + m_rhoField[cellI] * (1.0 - m_porosity[cellI]) );
+            totw += m_wi[specieI][cellI];         
         }
+        
+        // Rescale
+        if (totw > 1.)
+        {
+            forAll(m_species, specieI)
+            {
+                m_wi[specieI][cellI] /= totw;         
+            }            
+        }
+
+    }
+
+    forAll(m_species, specieI)
+    {
         m_wi[specieI].correctBoundaryConditions();
     }
 
@@ -574,7 +590,7 @@ void pyroSolid::solveEnergy()
     //     }
     // }
 
-    updateHTC();
+    //updateHTC();
 
     //const volScalarField& RRQdot = m_mesh.lookupObject<volScalarField>("RRQdot");
 
@@ -616,7 +632,7 @@ void pyroSolid::solveEnergy()
         << min(m_T).value() << ", " << max(m_T).value() << endl;
 
 }
-
+/*
 volScalarField pyroSolid::mdot()
 {
 
@@ -636,10 +652,10 @@ volScalarField pyroSolid::mdot()
 
     forAll(m_reactionRates, rateI)
     {
-        mdot += m_reactionRates[rateI];
+        mdot -= m_reactionRates[rateI];
     }
 
     mdot.correctBoundaryConditions();
 
     return mdot;
-}
+}*/

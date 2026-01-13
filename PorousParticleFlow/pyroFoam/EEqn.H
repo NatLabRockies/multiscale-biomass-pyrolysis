@@ -1,4 +1,10 @@
+ps.updateHTC();
+
+label nEnergyCouplingCorrs(ps.dict().lookupOrDefault<label>("nEnergyCouplingCorrectors",1));
+for (label ecorr = 0; ecorr < nEnergyCouplingCorrs; ecorr++)
 {
+    ps.solveEnergy();
+
     volScalarField& he = thermo.he();
 
     fvScalarMatrix EEqn
@@ -40,4 +46,5 @@
 
     Info<< "min/max(T) = "
         << min(T).value() << ", " << max(T).value() << endl;
+
 }
