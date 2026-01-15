@@ -1,0 +1,36 @@
+#!/bin/bash
+#SBATCH --job-name=smalldebfoam
+#SBATCH --partition=debug
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=8
+#SBATCH --time=1:00:00
+#SBATCH --account=catmod
+#SBATCH --output=pyroout
+#SBATCH --error=pyroerr
+#SBATCH --mail-user=fmunicch@nrel.gov
+#SBATCH --mail-type=all
+
+#module purge
+#module load conda
+#source activate yt
+#python write_stl_circle_on_cylinder.py constant/globalVars 60
+#source deactivate yt
+
+#module purge
+module load openfoam/v2406-craympich-gcc
+#source /projects/biocon/ofoam_cray_mpich/OpenFOAM-dev/etc/bashrc
+#./Allclean
+#echo "copying init"
+#cp -r init 0
+#echo "running blockMesh"
+#blockMesh
+#echo "running snappyHexMesh"
+#snappyHexMesh -overwrite
+#echo "setting fields"
+#setFields
+#echo "decomposing"
+#decomposePar
+#echo "running"
+srun -n 8 -K1  pyroFoam -parallel
+echo "reconstructing"
+reconstructPar -newTimes

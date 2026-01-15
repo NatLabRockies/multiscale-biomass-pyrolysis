@@ -1,0 +1,169 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+porosityval  $poro;
+
+
+defaultFieldValues
+(
+    volScalarFieldValue T $wallT
+    //volScalarFieldValue porosity 1
+            volScalarFieldValue N2 1
+            volScalarFieldValue O2 0
+            volScalarFieldValue COH2 0
+            volScalarFieldValue C6H6O3 0
+            volScalarFieldValue CHAR 0
+            volScalarFieldValue	HCE1 0
+            volScalarFieldValue	TGL 0
+            volScalarFieldValue	HCOOH 0
+            volScalarFieldValue	COH2S 0
+            volScalarFieldValue	GMSW 0
+            volScalarFieldValue	C6H10O5 0
+            volScalarFieldValue	CO2 0
+            volScalarFieldValue	C2H4 0
+            volScalarFieldValue	C2H6 0
+            volScalarFieldValue	C6H5OHS 0
+            volScalarFieldValue	CH2OHCHO 0
+            volScalarFieldValue	LIGC 0
+            volScalarFieldValue	H2S 0
+            volScalarFieldValue	C2H3CHO 0
+            volScalarFieldValue	LIG 0
+            volScalarFieldValue	CELL 0
+            volScalarFieldValue	CH4 0
+            volScalarFieldValue	CH2OS 0
+            volScalarFieldValue	CO 0
+            volScalarFieldValue	XYGR 0
+            volScalarFieldValue	LIGO 0
+            volScalarFieldValue	CO2S 0
+            volScalarFieldValue	VANILLIN 0
+            volScalarFieldValue	H2O 0
+            volScalarFieldValue	C2H6S 0
+            volScalarFieldValue	LIGCC 0
+            volScalarFieldValue	MLINO 0
+            volScalarFieldValue	C2H4S 0
+            volScalarFieldValue	TANN 0
+            volScalarFieldValue	CH3OH 0
+            volScalarFieldValue	H2 0
+            volScalarFieldValue	C6H5OH 0
+            volScalarFieldValue	ACQUA 0
+            volScalarFieldValue	C2H5OH 0
+            volScalarFieldValue	C6H5OCH3 0
+            volScalarFieldValue	CH3CO2H 0
+            volScalarFieldValue	CH3OHS 0
+            volScalarFieldValue	C24H28O4 0
+            volScalarFieldValue	CH3CHO 0
+            volScalarFieldValue	FURFURAL 0
+            volScalarFieldValue	COS 0
+            volScalarFieldValue	CH4S 0
+            volScalarFieldValue	LIGOH 0
+            volScalarFieldValue	U2ME12 0
+            volScalarFieldValue	XYHW 0
+            volScalarFieldValue	C2H5CHO 0
+            volScalarFieldValue	CH2O 0
+            volScalarFieldValue	CH2OHCH2CHO 0
+            volScalarFieldValue	LIGH $LIGH_0
+            volScalarFieldValue	CRESOL 0
+            volScalarFieldValue	ITANN 0
+            volScalarFieldValue	CELLA 0
+            volScalarFieldValue	HCE2 0
+            volScalarFieldValue	C5H8O4 0
+            volScalarFieldValue	CHOCHO 0
+            volScalarFieldValue N2.solid 0
+            volScalarFieldValue O2.solid 0
+            volScalarFieldValue COH2.solid 0
+            volScalarFieldValue C6H6O3.solid 0
+            volScalarFieldValue CHAR.solid 0
+            volScalarFieldValue	HCE1.solid 0
+            volScalarFieldValue	TGL.solid $TGL_0
+            volScalarFieldValue	HCOOH.solid 0
+            volScalarFieldValue	COH2S.solid 0
+            volScalarFieldValue	GMSW.solid $GMSW_0
+            volScalarFieldValue	C6H10O5.solid 0
+            volScalarFieldValue	CO2.solid 0
+            volScalarFieldValue	C2H4.solid 0
+            volScalarFieldValue	C2H6.solid 0
+            volScalarFieldValue	C6H5OHS.solid 0
+            volScalarFieldValue	CH2OHCHO.solid 0
+            volScalarFieldValue	LIGC.solid $LIGC_0
+            volScalarFieldValue	H2S.solid 0
+            volScalarFieldValue	C2H3CHO.solid 0
+            volScalarFieldValue	LIG.solid 0
+            volScalarFieldValue	CELL.solid $CELL_0
+            volScalarFieldValue	CH4.solid 0
+            volScalarFieldValue	CH2OS.solid 0
+            volScalarFieldValue	CO.solid 0
+            volScalarFieldValue	XYGR.solid 0
+            volScalarFieldValue	LIGO.solid $LIGO_0
+            volScalarFieldValue	CO2S.solid 0
+            volScalarFieldValue	VANILLIN.solid 0
+            volScalarFieldValue	H2O.solid 0
+            volScalarFieldValue	C2H6S.solid 0
+            volScalarFieldValue	LIGCC.solid 0
+            volScalarFieldValue	MLINO.solid 0
+            volScalarFieldValue	C2H4S.solid 0
+            volScalarFieldValue	TANN.solid 0
+            volScalarFieldValue	CH3OH.solid 0
+            volScalarFieldValue	H2.solid 0
+            volScalarFieldValue	C6H5OH.solid 0
+            volScalarFieldValue	ACQUA.solid $ACQUA_0
+            volScalarFieldValue	C2H5OH.solid 0
+            volScalarFieldValue	C6H5OCH3.solid 0
+            volScalarFieldValue	CH3CO2H.solid 0
+            volScalarFieldValue	CH3OHS.solid 0
+            volScalarFieldValue	C24H28O4.solid 0
+            volScalarFieldValue	CH3CHO.solid 0
+            volScalarFieldValue	FURFURAL.solid 0
+            volScalarFieldValue	COS.solid 0
+            volScalarFieldValue	CH4S.solid 0
+            volScalarFieldValue	LIGOH.solid 0
+            volScalarFieldValue	U2ME12.solid 0
+            volScalarFieldValue	XYHW.solid 0
+            volScalarFieldValue	C2H5CHO.solid 0
+            volScalarFieldValue	CH2O.solid 0
+            volScalarFieldValue	CH2OHCH2CHO.solid 0
+            volScalarFieldValue	LIGH.solid $LIGH_0
+            volScalarFieldValue	CRESOL.solid 0
+            volScalarFieldValue	ITANN.solid 0
+            volScalarFieldValue	CELLA.solid 0
+            volScalarFieldValue	HCE2.solid 0
+            volScalarFieldValue	C5H8O4.solid 0
+            volScalarFieldValue	CHOCHO.solid 0
+    volVectorFieldValue U ($Uin 0.0 0.0)
+
+);
+
+regions
+(
+    cylinderToCell
+    {
+        p1 ($xmid $ymid $cylbotz);
+        p2 ($xmid $ymid $cyltopz);
+        radius $cylrad;
+        fieldValues
+        (
+            volScalarFieldValue T $Tpart0
+            //volScalarFieldValue porosity $porosityval
+	   
+ 
+
+            volVectorFieldValue U (0.0 0.0 0.0)
+        );
+    }
+);
+
+// ************************************************************************* //
