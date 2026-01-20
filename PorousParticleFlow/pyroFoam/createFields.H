@@ -169,3 +169,5 @@ volTensorField Kp
 );
 
 scalar globalContErr = 0;
+
+volScalarField rhoCv(rho*thermo.Cpv());
