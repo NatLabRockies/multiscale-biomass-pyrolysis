@@ -563,7 +563,7 @@ void pyroSolid::solveEnergy()
 
     forAll(m_kappa, specieI)
     {
-        m_kappa_tot += m_species[specieI]*kappaDim*m_kappa[specieI];
+        m_kappa_tot += m_wi[specieI]*kappaDim*m_kappa[specieI];
     }
 
     surfaceScalarField kappaf = fvc::interpolate(m_kappa_tot);
