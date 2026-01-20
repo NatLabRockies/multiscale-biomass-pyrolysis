@@ -577,7 +577,7 @@ void pyroSolid::solveEnergy()
 
         }
 
-        m_rhoCp[cellI] = rhocp;
+        m_rhoCp[cellI] = rhocp*(1. - m_porosity[cellI]);
     }
     m_rhoCp.correctBoundaryConditions();
 
