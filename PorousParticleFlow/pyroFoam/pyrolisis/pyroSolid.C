@@ -501,7 +501,7 @@ void pyroSolid::updateHTC()
 
             forAll(m_kappa, specieI)
             {
-                kappa += m_kappa[specieI]*m_species[specieI][cellI];
+                kappa += m_kappa[specieI]*m_wi[specieI][cellI];
             }
 
             // Add surface area per unit volume to be consistent with equations
@@ -521,7 +521,7 @@ void pyroSolid::updateHTC()
 
             forAll(m_kappa, specieI)
             {
-                kappa += m_kappa[specieI]*m_species[specieI][cellI];
+                kappa += m_kappa[specieI]*m_wi[specieI][cellI];
             }
 
             m_htc[cellI] = htc_conv * ( specificAreas[cellI] + ( 6.0 * (1.0 - m_porosity[cellI] ) / m_poreSize) );
@@ -573,7 +573,7 @@ void pyroSolid::solveEnergy()
         scalar rhocp = 1e-5;
         forAll(m_kappa, specieI)
         {
-            rhocp += m_species[specieI][cellI]*m_rho[specieI]*m_cp[specieI];
+            rhocp += m_wi[specieI][cellI]*m_rho[specieI]*m_cp[specieI];
 
         }
 
