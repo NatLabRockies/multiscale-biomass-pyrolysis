@@ -367,16 +367,16 @@ void pyroSolid::react()
         forAll(m_species, specieI)
         {
             m_wi[specieI][cellI] = m_species[specieI][cellI] * m_rho[specieI] / ( 1e-12 + m_rhoField[cellI] * (1.0 - m_porosity[cellI]) );
-            totw += m_wi[specieI][cellI];         
+            totw += m_wi[specieI][cellI];
         }
-        
+
         // Rescale
         if (totw > 1.)
         {
             forAll(m_species, specieI)
             {
-                m_wi[specieI][cellI] /= totw;         
-            }            
+                m_wi[specieI][cellI] /= totw;
+            }
         }
 
     }
@@ -471,7 +471,7 @@ void pyroSolid::updateHTC()
     const auto& rho = m_mesh.lookupObject<volScalarField>("rho");
     const auto& U = m_mesh.lookupObject<volVectorField>("U");
     const auto& V = m_mesh.V();
-    
+
             // Compute interface convective heat transfer
     scalarField ap = volPointInterpolation::New(m_mesh).interpolate(m_porosity);
     volScalarField specificAreas = m_porosity*0.;
@@ -527,11 +527,11 @@ void pyroSolid::updateHTC()
             m_htc[cellI] = htc_conv * ( specificAreas[cellI] + ( 6.0 * (1.0 - m_porosity[cellI] ) / m_poreSize) );
         }
 
-        m_htc.correctBoundaryConditions();    
+        m_htc.correctBoundaryConditions();
     }
     else
     {
-        FatalErrorInFunction << "porous_htc_model\n" << abort(FatalError);   
+        FatalErrorInFunction << "porous_htc_model\n" << abort(FatalError);
     }
 
 
@@ -577,7 +577,7 @@ void pyroSolid::solveEnergy()
 
         }
 
-        m_rhoCp[cellI] = rhocp*(1. - m_porosity[cellI]);
+        m_rhoCp[cellI] = rhocp*max(1 - m_porosity[cellI], 1e-3 );
     }
     m_rhoCp.correctBoundaryConditions();
 
