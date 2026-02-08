@@ -121,6 +121,8 @@ public:
     void null_field_in_covered_cells(Vector<MultiFab>& fld,
                                               Vector<MultiFab>& Sborder,
                                               int startcomp,int numcomp);
+
+    void smooth_cellmask();
     //*****************************************************************
 
     void set_solver_mask(Vector<iMultiFab>& solvermask,
@@ -168,6 +170,7 @@ public:
     amrex::Real fixed_dt=1e-12;
     amrex::Real advective_cfl=0.5;
     amrex::Real diffusive_cfl=0.5;
+    int nsmoothiters=5;
 
     int under_relax[NUM_SPECIES]={0};
     amrex::Real relaxfac[NUM_SPECIES]={0.0};

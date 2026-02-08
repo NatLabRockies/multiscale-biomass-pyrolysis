@@ -110,6 +110,7 @@ void TranspReact::InitData()
         // start simulation from the beginning
         const Real time = 0.0;
         InitFromScratch(time);
+        smooth_cellmask();
         
         if(transform_vars)
         {
@@ -380,6 +381,7 @@ void TranspReact::ReadParameters()
         {
             ngrow_for_fillpatch=3;
         }
+        pp.query("cmask_smoothing_iters",nsmoothiters);
 
     }
 }
@@ -603,5 +605,92 @@ void TranspReact::null_field_in_covered_cells(Vector<MultiFab>& fld,
         {
             amrex::MultiFab::Multiply(fld[lev],Sborder[lev],CMASK_ID, c, 1, 0);
         }
+    }
+}
+
+void TranspReact::smooth_cellmask()
+{
+    const Real time=0.0;
+    amrex::Print()<<"finest_level:"<<finest_level<<"\t"<<phi_new.size()<<"\n";
+    Vector<MultiFab> Sborder(finest_level+1);
+    for(int lev=0;lev<=finest_level;lev++)
+    {
+        Sborder[lev].define(grids[lev], dmap[lev], phi_new[lev].nComp(), ngrow_for_fillpatch);
+        Sborder[lev].setVal(0.0);
+
+        FillPatch(lev, time, Sborder[lev], 0, Sborder[lev].nComp());
+    }
+
+    for(int siter=0;siter<nsmoothiters;siter++)
+    {
+        for(int lev=0;lev<=finest_level;lev++)
+        {
+            const auto dx = geom[lev].CellSizeArray();
+            auto prob_lo = geom[lev].ProbLoArray();
+            auto prob_hi = geom[lev].ProbHiArray();
+            const int* domlo_arr = geom[lev].Domain().loVect();
+            const int* domhi_arr = geom[lev].Domain().hiVect();
+
+            GpuArray<int,AMREX_SPACEDIM> domlo={AMREX_D_DECL(domlo_arr[0], domlo_arr[1], domlo_arr[2])};
+            GpuArray<int,AMREX_SPACEDIM> domhi={AMREX_D_DECL(domhi_arr[0], domhi_arr[1], domhi_arr[2])};
+
+            for (MFIter mfi(phi_new[lev], TilingIfNotGPU()); mfi.isValid(); ++mfi)
+            {
+                const Box& bx = mfi.tilebox();
+                const Box& gbx = amrex::grow(bx, 1);
+
+                Array4<Real> sborder_arr = Sborder[lev].array(mfi);
+                Array4<Real> phi_arr = phi_new[lev].array(mfi);
+
+                // update residual
+                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) {
+                    //laplace smoothing
+                    Real nadds=0.0;
+                    Real neighborsum=0.0;
+#if AMREX_SPACEDIM == 3
+                    for(int kk=-1;kk<=1;kk++)
+#endif
+                    {
+#if AMREX_SPACEDIM > 1
+                        for(int jj=-1;jj<=1;jj++)
+#endif
+                        {
+                            for(int ii=-1;ii<=1;ii++)
+                            {
+                                if(!(ii==0 && jj==0 && kk==0))
+                                {
+                                    nadds=nadds+1.0;
+                                    neighborsum += sborder_arr(i+ii,j+jj,k+kk,CMASK_ID);
+                                }
+                            }
+                        }
+                    }
+
+                    phi_arr(i,j,k,CMASK_ID)=neighborsum/nadds;
+                });
+            }
+
+            //fill patching with new transformed variables        
+            FillPatch(lev, time, Sborder[lev], 0, Sborder[lev].nComp());
+        }
+
+    }
+
+    ProbParm* localprobparm = d_prob_parm;
+    for(int lev=0;lev<=finest_level;lev++)
+    {
+        MultiFab& state = phi_new[lev];
+        for (MFIter mfi(state); mfi.isValid(); ++mfi)
+        {
+            Array4<Real> fab = state[mfi].array();
+            GeometryData geomData = geom[lev].data();
+            const Box& box = mfi.validbox();
+
+            amrex::launch(box, [=] AMREX_GPU_DEVICE(Box const& tbx) {
+                    initdomaindata(tbx, fab, geomData, localprobparm);
+                    });
+        }
+    
+        amrex::MultiFab::Copy(phi_old[lev], phi_new[lev], 0, 0, phi_new[lev].nComp(), 0);
     }
 }

@@ -75,6 +75,17 @@ void TranspReact::MakeNewLevelFromScratch(int lev, Real time, const BoxArray& ba
     state.setVal(0.0);
 
     ProbParm* localprobparm = d_prob_parm;
+    
+    for (MFIter mfi(state); mfi.isValid(); ++mfi)
+    {
+        Array4<Real> fab = state[mfi].array();
+        GeometryData geomData = geom[lev].data();
+        const Box& box = mfi.validbox();
+
+        amrex::launch(box, [=] AMREX_GPU_DEVICE(Box const& tbx) {
+            initcellmask(tbx, fab, geomData, localprobparm);
+        });
+    }
 
     for (MFIter mfi(state); mfi.isValid(); ++mfi)
     {
