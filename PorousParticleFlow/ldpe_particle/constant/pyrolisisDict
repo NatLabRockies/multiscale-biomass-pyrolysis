@@ -1,0 +1,131 @@
+
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      pyrolisisDict;
+}
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+poreSize 1e-5;
+nSubTimeSteps 25;
+
+heatTransferModel
+{
+    convective_htc      125;
+    porous_htc_model    useConvective;
+}
+
+nEnergyCouplingCorrectors 5;
+
+species
+(
+    LDPE
+    GAS
+    TAR
+    CHAR
+    N2
+    O2
+
+);
+
+reactions
+(	
+    Rxn1
+);
+
+speciesCoeffs
+{
+
+    LDPE
+    {
+	name LDPE;
+        rho 920.0;
+        cp 1500;
+        molWeight 30.0;
+        kappa 0.3;
+        hf 0;
+        gas false;
+    }
+                    
+    GAS
+    {
+	name GAS;
+        rho 0.5;
+        cp 14416.595705268624; //H2
+        molWeight 2.574;
+        kappa 0.2;
+        hf 0;
+        gas true;
+    }
+                    
+    TAR
+    {
+	name TAR;
+        rho 0.5;
+        cp 1242.4969566517093;
+        molWeight 27.426;
+        kappa 0.2;
+        hf 0;
+        gas true;
+    }
+    
+    CHAR
+    {
+	name CHAR;
+        rho 1700.0;
+        cp 962.1327204076933;
+        molWeight 12.0;
+        kappa 0.3;
+        hf 0;
+        gas false;
+    }
+                    
+    N2
+    {
+	name N2;
+        rho 0.5;
+        cp 1040.0881656311146;
+        molWeight 28.0;
+        kappa 0.2;
+        hf 0;
+        gas true;
+    }
+                    
+    O2
+    {
+        name O2;
+        rho 0.5;
+        cp 1835.9087028994384;
+        molWeight 16.0;
+        kappa 0.2;
+        hf 0;
+        gas true;
+    }
+                    
+}
+reactionCoeffs
+// add heats of reaction from comsol in J/kg
+// positive sign means exothermic
+// so all signs are flipped from their original
+{
+
+	Rxn1
+    {
+    reactants ( LDPE );
+    reactant_stochiometric_coefficients (1);
+    products ( GAS TAR CHAR );
+    product_stochiometric_coefficients (0.0858 0.9142 0);
+
+    A           4.13428E19;
+    beta        0;
+    Ta          37337.02189;
+    heatOfReaction -9788.333333; //endothermic
+    mf 0.016596321;
+    customReaction true;
+    }
+}
+
+// ************************************************************************* //

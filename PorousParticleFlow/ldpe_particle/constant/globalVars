@@ -1,0 +1,19 @@
+cylrad 0.0034;
+cylht 0.008;
+cylmidr #calc "$cylrad*0.5";
+cylmidz #calc "$cylht*0.5";
+domx #calc "5.0*$cylrad";
+domy #calc "5.0*$cylrad";
+domz #calc "2.0*$cylht";
+xmid #calc "0.005+$cylrad";
+ymid #calc "$domy*0.5";
+zmid #calc "$domz*0.5";
+cyltopz #calc "$zmid+$cylmidz";
+cylbotz #calc "$zmid-$cylmidz";
+wallT 700;
+poro 0.1; // lower than pine pellet
+Uin 0.175; // estimated from COMSOL
+Tpart0 700;
+LDPE_0 1; // initial mass fraction of ldpe in solid
+m0 0.2724; //kg
+mf 4.52084E-06; //kg

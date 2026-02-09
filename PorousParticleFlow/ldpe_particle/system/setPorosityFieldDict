@@ -1,0 +1,53 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setAlphaFieldDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+field porosity;
+
+type composedFunction;
+mode intersect;
+composedFunction
+{
+    cylinder
+    {
+        type cylinder;
+        radius          $cylrad;
+        direction       (0 0 1);
+        origin          ($xmid $ymid 0);   
+        height          $cylht;
+    } 
+
+    plane1
+    {
+        type plane;
+        origin (0 0 $cylbotz);
+        normal (0 0 1);
+    }
+    plane2
+    {
+        type plane;
+        origin (0 0 $cyltopz);
+        normal (0 0 -1);
+    }
+   
+}
+
+value $poro;
+
+// ************************************************************************* //
+

@@ -45,6 +45,21 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
         m_mesh,
         dimensionedScalar("rho",dimDensity,0.)
     ),
+
+     m_m0
+    (
+        IOobject
+        (
+            "rho0.solid",
+            m_mesh.time().timeName(),
+            m_mesh,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        m_mesh,
+        dimensionedScalar("rho0",dimDensity,0.)
+    ),
+
     m_T
     (
         IOobject
@@ -159,6 +174,7 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
             )
         );
 
+
         m_species.set (
             specieI,
             new volScalarField
@@ -258,7 +274,7 @@ pyroSolid::pyroSolid(const fvMesh& mesh)
     {
         m_species[specieI] = m_wi[specieI] * ( m_rhoField  / dimensionedScalar("rho", dimDensity, m_rho[specieI]) );
     }
-
+    m_m0 = m_rhoField;
 }
 
 pyroSolid::~pyroSolid()
@@ -319,7 +335,9 @@ void pyroSolid::react()
             {
                 // This updates ndot and adds the heat of reaction for m_reactions[reactI] to
                 // m_Qdot. This is added every sub time step.
-                m_Qdot[cellI] += m_reactions[reactI].computeSources(m_T[cellI], Y, m_molWeight, ndot) / scalar(m_nSubTimeSteps);
+		//Info << "computing sources" <<endl;
+                m_Qdot[cellI] += m_reactions[reactI].computeSources(m_T[cellI], Y, m_molWeight, m_m0[cellI], ndot) / scalar(m_nSubTimeSteps);
+		//Info << "done computing sources" <<endl;
             }
 
             Y += sub_dt * ndot;

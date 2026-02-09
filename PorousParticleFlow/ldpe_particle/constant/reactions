@@ -1,0 +1,11 @@
+species
+(
+    GAS
+    TAR
+    N2
+    O2
+); 
+
+reactions
+{
+}

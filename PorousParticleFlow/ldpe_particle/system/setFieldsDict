@@ -1,0 +1,61 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  dev
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "${FOAM_CASE}/constant/globalVars"
+
+porosityval  $poro;
+
+
+defaultFieldValues
+(
+    volScalarFieldValue T $wallT
+    volScalarFieldValue N2 1
+    volScalarFieldValue O2 0
+    volScalarFieldValue	LDPE 0
+    volScalarFieldValue	GAS 0
+    volScalarFieldValue	TAR 0
+    volScalarFieldValue	CHAR 0
+    volScalarFieldValue N2.solid 0
+    volScalarFieldValue O2.solid 0
+    volScalarFieldValue LDPE.solid 0
+    volScalarFieldValue GAS.solid 0
+    volScalarFieldValue TAR.solid 0
+    volScalarFieldValue CHAR.solid 0
+    volVectorFieldValue U ($Uin 0.0 0.0)
+
+);
+
+regions
+(
+    cylinderToCell
+    {
+        p1 ($xmid $ymid $cylbotz);
+        p2 ($xmid $ymid $cyltopz);
+        radius $cylrad;
+        fieldValues
+        (
+            volScalarFieldValue T $Tpart0
+            volScalarFieldValue LDPE.solid $LDPE_0
+            //volScalarFieldValue porosity $porosityval
+	   
+ 
+
+            volVectorFieldValue U (0.0 0.0 0.0)
+        );
+    }
+);
+
+// ************************************************************************* //
