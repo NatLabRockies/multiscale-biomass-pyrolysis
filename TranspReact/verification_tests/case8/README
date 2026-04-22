@@ -1,0 +1,22 @@
+#Solving electrode-electrolyte system for CO2 to CO reduction
+
+d/dx(-sigma dphi/dx)=0
+phi(0)=0 on electrode side (left) 
+current density=-sigma dphi/dx=-J0 on electrolyte side (right) 
+sigma=0.0002 for x in [0,L/2) (electrode)
+sigma=0.0001 for x in [L/2,1] (electrolyte)
+
+At the interface a BV condition is applied
+-sigma dphidx (left) \hat{x} = -jco*exp(-k(phi_electrode-phi_electrolyte-E0)) \hat{Electrode->Electrolyte}
+= -sigma dphidx (right) \hat{x}
+
+In this case, a cell mask is 
+applied in in [0,L/2) and 
+IB method is used.
+
+Potential is then solved 
+inside the solid (cell mask=0) using
+iterative conjugate solves.
+
+Note that the BV current is always directed from 
+electrode to electrolyte
