@@ -661,10 +661,18 @@ void TranspReact::smooth_cellmask()
                         {
                             for(int ii=-1;ii<=1;ii++)
                             {
-                                if(!(ii==0 && jj==0 && kk==0))
+                                if(!(ii==0 
+#if AMREX_SPACEDIM > 1
+                                  && jj==0 
+#endif
+#if AMREX_SPACEDIM == 3
+                                  && kk==0
+#endif
+                                     ))
                                 {
                                     nadds=nadds+1.0;
-                                    neighborsum += sborder_arr(i+ii,j+jj,k+kk,CMASK_ID);
+                                    IntVect neighCellid{AMREX_D_DECL(i+ii,j+jj,k+kk)};
+                                    neighborsum += sborder_arr(neighCellid,CMASK_ID);
                                 }
                             }
                         }
