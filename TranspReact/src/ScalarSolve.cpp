@@ -47,6 +47,11 @@ void TranspReact::chemistry_advance(int lev, Real time, Real dt_lev,
         steady_species[ind]=steadyspec[ind];
     }
 
+    int num_grow=ngrow_for_fillpatch; 
+    MultiFab Sborder(grids[lev],dmap[lev],phi_new_lev.nComp(),num_grow);
+    Sborder.setVal(0.0);
+    FillPatch(lev, time, Sborder, 0, Sborder.nComp());
+
     auto rhs_function = [&] ( MultiFab& dSdt, 
                              MultiFab& S, const Real time) {
         update_rxnsrc_at_level(lev, S, dSdt, time);
@@ -66,7 +71,7 @@ void TranspReact::chemistry_advance(int lev, Real time, Real dt_lev,
     };
 
     // Define the integrator
-    TimeIntegrator<MultiFab> integrator(phi_new_lev,time);
+    TimeIntegrator<MultiFab> integrator(Sborder,time);
     integrator.set_time_step(dt_lev);
     if(integration_type=="SUNDIALS")
     {
@@ -101,7 +106,8 @@ void TranspReact::chemistry_advance(int lev, Real time, Real dt_lev,
     // Advance from time to time + dt_lev
     //S_new/phi_new should have the new state
     //
-    integrator.evolve(phi_new_lev, time+dt_lev); 
+    //integrator.evolve(phi_new_lev, time+dt_lev); 
+    integrator.advance(Sborder,phi_new_lev, time, dt_lev); 
 }
 
 void TranspReact::update_advsrc_at_all_levels(int specid,Vector<MultiFab>& Sborder,
